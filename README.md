@@ -1,5 +1,5 @@
 # MAT-303
-Applied Statistics
+## Applied Statistics
 
 This course was my first in depth look into true data analysis, especially with using R. Through this readme I will try to make everything as simplistic as I can and try to go into some detail about the specifics of the work we were working on week to week in each module. Within the individual readmes of each module I will also post the rubric for what we were to be answering within our report that we typed up going over our results.
 
