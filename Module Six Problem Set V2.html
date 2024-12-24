@@ -1,0 +1,2352 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1>Module Six Problem Set: Decision Trees<a rel="noopener" class="anchor-link" href="#Module-Six-Problem-Set:-Decision-Trees">&#182;</a></h1><p>In this notebook, you have been given a set of steps that will show you how to create and train a decision tree. It is very important to run the steps in order. Some steps depend on the outputs of earlier steps. Once you have run all the steps, you will be asked to create your own decision tree models to help you answer the questions in the Module Six Problem Set. You are expected to write the R script yourself to answer these questions.</p>
+<p>Reminder: If you have not already reviewed the Problem Set Report template for your Module Six Problem Set, be sure to do so now. That will give you an idea of the questions you will need to answer with the outputs of this script. You should use the code you are given as reference when writing your own scripts.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 1: Loading the Data Set (for the Classification Decision Tree)<a rel="noopener" class="anchor-link" href="#Step-1:-Loading-the-Data-Set-(for-the-Classification-Decision-Tree)">&#182;</a></h2><p>You are a risk analyst working for a credit card company. You have access to a set of historical data that can be used to study the relationships between customer characteristics and whether or not they are likely to default on their credit. It is important for the company to calculate the risk that their customers will default on their credit. The table below shows some of the characteristics that will be used in the analysis below.</p>
+<p>This block of R code will load the <strong>credit_card_default.csv</strong> data set. Here are the variables that will be retained.</p>
+<table>
+<thead><tr>
+<th><div style="text-align: left;"> Variable </div></th>
+<th><div style="text-align: left;"> What does it represent? </div></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><div style="text-align: left;"> age </div></td>
+<td><div style="text-align: left;"> Age of the individual </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> sex </div></td>
+<td><div style="text-align: left;"> Sex of individual (male or female) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> education </div></td>
+<td><div style="text-align: left;"> Highest education level attained (high school, college, or post graduate)</div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> marriage </div></td>
+<td><div style="text-align: left;"> Is the individual married or unmarried?</div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> assets </div></td>
+<td><div style="text-align: left;"> Assets owned by the individual (none, car only, house only, car and house) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> missed_payment </div></td>
+<td><div style="text-align: left;"> Did the individual miss payments in the last 3 months? (missed or none) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> credit_utilize </div></td>
+<td><div style="text-align: left;"> Credit utilization by the individual, meaning how much of the credit allowed is being used </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> default </div></td>
+<td><div style="text-align: left;"> Did the individual default on their credit? (default, no default) </div></td>
+</tr>
+</tbody>
+</table>
+<p>Note: Credit utilization is expressed as a decimal representing the percentage of your total credit limit you have utilized. For example, if you have used 50% of your credit limit, the value of credit_utilize would be 0.50.</p>
+<p>Reference: 
+Yeh, I. C., &amp; Lien, C. H. (2009). The comparisons of data mining techniques for the predictive accuracy of probability of default of credit card clients. Expert Systems with Applications, 36(2), 2473-2480. Retrieved from <a rel="noopener" href="https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients">https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients</a></p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.
+<br/><br/>
+<font color="red">**Note:** The code section below will first install one R package: &quot;rpart.plot&quot;. Please do not move to the next step until the package is fully installed. This will take some time. Once the installation is complete, this step will print first 6 rows of the data set.</font></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;The code section below will first install one R package: rpart.plot.&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Please do not move to the next step until the package is fully installed.&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;This will take some time. Once the installation is complete, this step will print first 6 rows of the data set.&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Loading package to show the decision tree</span>
+install.packages<span class="p">(</span><span class="s">&quot;rpart.plot&quot;</span><span class="p">)</span>
+
+<span class="c1"># Loading credit card default data set</span>
+credit_default <span class="o">&lt;-</span> read.csv<span class="p">(</span>file<span class="o">=</span><span class="s">&#39;credit_card_default.csv&#39;</span><span class="p">,</span> header<span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> sep<span class="o">=</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;installation completed!&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;data set (first 6 rows)&quot;</span><span class="p">)</span>
+<span class="kp">head</span><span class="p">(</span>credit_default<span class="p">,</span> <span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;The code section below will first install one R package: rpart.plot.&quot;
+[1] &quot;Please do not move to the next step until the package is fully installed.&quot;
+[1] &quot;This will take some time. Once the installation is complete, this step will print first 6 rows of the data set.&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Installing package into &#39;/home/codio/R/x86_64-pc-linux-gnu-library/3.4&#39;
+(as &#39;lib&#39; is unspecified)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;installation completed!&quot;
+[1] &quot;data set (first 6 rows)&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A data.frame: 6 &#215; 8</caption>
+<thead>
+	<tr><th scope="col">age</th><th scope="col">sex</th><th scope="col">education</th><th scope="col">marriage</th><th scope="col">assets</th><th scope="col">missed_payment</th><th scope="col">credit_utilize</th><th scope="col">default</th></tr>
+	<tr><th scope="col">&lt;int&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;fct&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>28</td><td>male  </td><td>college     </td><td>married  </td><td>house    </td><td>no </td><td>0.191</td><td>no </td></tr>
+	<tr><td>31</td><td>female</td><td>postgraduate</td><td>married  </td><td>car_house</td><td>no </td><td>0.196</td><td>no </td></tr>
+	<tr><td>48</td><td>female</td><td>college     </td><td>married  </td><td>house    </td><td>yes</td><td>1.000</td><td>yes</td></tr>
+	<tr><td>35</td><td>male  </td><td>high_school </td><td>married  </td><td>car      </td><td>yes</td><td>1.000</td><td>yes</td></tr>
+	<tr><td>30</td><td>female</td><td>high_school </td><td>unmarried</td><td>car      </td><td>no </td><td>0.374</td><td>yes</td></tr>
+	<tr><td>23</td><td>female</td><td>high_school </td><td>unmarried</td><td>house    </td><td>yes</td><td>0.970</td><td>yes</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 2: Splitting Data into Training and Testing Sets<a rel="noopener" class="anchor-link" href="#Step-2:-Splitting-Data-into-Training-and-Testing-Sets">&#182;</a></h2><p>In this step, you will split the data set into training and testing sets. The training set will be used to create the decision tree model and the testing set will be used to validate the model that is created. The training set and testing set split will be 60% and 40%, respectively. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.60</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>credit_default<span class="p">))</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>credit_default<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data1 <span class="o">=</span> credit_default<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data1<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the validation set&quot;</span><span class="p">)</span>
+test.data1 <span class="o">=</span> credit_default<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+360
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the validation set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+240
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 3: Constructing the Classification Decision Tree<a rel="noopener" class="anchor-link" href="#Step-3:-Constructing-the-Classification-Decision-Tree">&#182;</a></h2><p>This step will create the decision tree classification model to predict an individual defaulting on their credit using missed payments, education, and age. The R <strong>rpart</strong> library includes a method <em>rpart</em> that can create a decision tree classifier. This method can take several arguments to optimize the tree, but we will start with only assigning minimum split to 15. The minimum split is the minimum number of observations that must exist in a node in order for a split to be attempted. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+
+<span class="kn">library</span><span class="p">(</span>rpart<span class="p">)</span>
+model1 <span class="o">&lt;-</span> rpart<span class="p">(</span>default <span class="o">~</span> missed_payment <span class="o">+</span> education <span class="o">+</span> age<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;class&quot;</span><span class="p">,</span> data<span class="o">=</span>train.data1<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>minsplit<span class="o">=</span><span class="m">10</span><span class="p">))</span>
+printcp<span class="p">(</span>model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Classification tree:
+rpart(formula = default ~ missed_payment + education + age, data = train.data1, 
+    method = &quot;class&quot;, control = rpart.control(minsplit = 10))
+
+Variables actually used in tree construction:
+[1] age            education      missed_payment
+
+Root node error: 159/360 = 0.44167
+
+n= 360 
+
+        CP nsplit rel error  xerror     xstd
+1 0.496855      0   1.00000 1.00000 0.059258
+2 0.081761      1   0.50314 0.50314 0.049611
+3 0.018868      3   0.33962 0.35849 0.043562
+4 0.015723      4   0.32075 0.38994 0.045056
+5 0.010000      6   0.28931 0.35849 0.043562
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 4: Cross Validation Error and Cost-Complexity<a rel="noopener" class="anchor-link" href="#Step-4:-Cross-Validation-Error-and-Cost-Complexity">&#182;</a></h2><p>This block of R code will plot cross validation errors against cost-complexity parameter <strong>cp</strong>. This will assist you in selecting an appropriate model by pruning the tree. A horizontal red line will be drawn one standard error above the minimum error. In general, the largest <strong>cp</strong> value that achieves a cross validation error below the red line is chosen to prune the tree.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#plotcp(model) # Visualize cross validation results</span>
+plotcp<span class="p">(</span>model1<span class="p">,</span> minline <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> lty <span class="o">=</span> <span class="m">3</span><span class="p">,</span> col <span class="o">=</span> <span class="m">2</span><span class="p">,</span> upper <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;splits&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 5: Pruning the Tree<a rel="noopener" class="anchor-link" href="#Step-5:-Pruning-the-Tree">&#182;</a></h2><p>Using the plot in step 4, a good choice of cp for pruning is often the leftmost value for which the error lies below the horizontal red line. We will pick cp=0.039 and rerun the model, setting the cp parameter to this value. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+pruned_model1 <span class="o">&lt;-</span> rpart<span class="p">(</span>default <span class="o">~</span> missed_payment <span class="o">+</span> education <span class="o">+</span> age<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;class&quot;</span><span class="p">,</span>  data<span class="o">=</span>train.data1<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>cp <span class="o">=</span> <span class="m">0.039</span><span class="p">))</span>
+printcp<span class="p">(</span>pruned_model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Classification tree:
+rpart(formula = default ~ missed_payment + education + age, data = train.data1, 
+    method = &quot;class&quot;, control = rpart.control(cp = 0.039))
+
+Variables actually used in tree construction:
+[1] education      missed_payment
+
+Root node error: 159/360 = 0.44167
+
+n= 360 
+
+        CP nsplit rel error  xerror     xstd
+1 0.496855      0   1.00000 1.00000 0.059258
+2 0.081761      1   0.50314 0.50314 0.049611
+3 0.039000      3   0.33962 0.33962 0.042610
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 6: Plotting the Classification Decision Tree<a rel="noopener" class="anchor-link" href="#Step-6:-Plotting-the-Classification-Decision-Tree">&#182;</a></h2><p>This block of R code will provide a visual of the pruned decision tree model.
+<br/><br/>
+Each node shows:</p>
+<ul>
+<li>The predicted class (default or no default)</li>
+<li>The predicted probability of the event (defaulting)</li>
+<li>The percentage of observations in the node</li>
+</ul>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kn">library</span><span class="p">(</span>rpart.plot<span class="p">)</span>
+rpart.plot<span class="p">(</span>pruned_model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Interpreting the tree<a rel="noopener" class="anchor-link" href="#Interpreting-the-tree">&#182;</a></h3><p>As an example, the lower-right box can be interpreted as:</p>
+<ul>
+<li>education=&quot;postgraduate&quot; is no (meaning that the individual is not a postgraduate).</li>
+<li>missed_payment=&quot;no&quot; is no (meaning that the individual has missed payments). 
+<br/><br/></li>
+</ul>
+<p>This box should say &quot;Yes, 0.92, 41%&quot;.</p>
+<ul>
+<li>&quot;Yes&quot; means that majority of the observations are default=Yes (meaning that the individual defaulted).</li>
+<li>0.92 means that the probability of defaulting in that box is 0.92.</li>
+<li>41% means that 41% of the total observations in the training set fall in that node.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 7: Confusion Matrix<a rel="noopener" class="anchor-link" href="#Step-7:-Confusion-Matrix">&#182;</a></h2><p>This block of R code will obtain the confusion matrix using the model on the testing set. It will calculate the accuracy, precision, and recall. The confusion matrix, also known as an error matrix, allows us to evaluate the performance of the model. The rows of the table represent the predicted outcomes while the columns represent the actual outcomes. The table output is of the form:</p>
+<table>
+<thead><tr>
+<th></th>
+<th><strong>Prediction = 0</strong></th>
+<th><strong>Prediction = 1</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actual = 0</strong></td>
+<td>True Negatives</td>
+<td>False Positives</td>
+</tr>
+<tr>
+<td><strong>Actual = 1</strong></td>
+<td>False Negatives</td>
+<td>True Positives</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>True Positive (TP): The actual value is 1 (default=1) and the predicted value is 1 (default=1), hence a true positive. </li>
+<li>True Negative (TN): The actual value is 0 (default=0) and the predicted value is 0 (default=0), hence a true negative. </li>
+<li>False Positive (FP): The actual value is 0 (default=0) and the predicted value is 1 (default=1), hence a false positive. This is also the Type 1 Error.</li>
+<li>False Negative (FN): The actual value is 1 (default=1) and the predicted value is 0 (default=0), hence a false negative. This is also the Type 2 Error.</li>
+</ul>
+<p><br/><br/></p>
+<p><strong>Accuracy</strong> is the ratio of the number of correct predictions to the total number of observations.
+<br/><br/>
+\begin{equation*}
+Accuracy = \frac{TP\ +\ TN}{TP\ +\ TN\ +\ FP\ + FN} 
+\end{equation*}</p>
+<p><br/><br/></p>
+<p><strong>Precision</strong> is the ratio of correct positive predictions to the total predicted positives.
+<br/><br/>
+\begin{equation*}
+Precision = \frac{TP}{TP\ +\ FP} 
+\end{equation*}</p>
+<p><br/><br/></p>
+<p><strong>Recall</strong> is the ratio of correct positive predictions to the total positives examples.</p>
+<p>\begin{equation*}
+Recall = \frac{TP}{TP\ +\ FN} 
+\end{equation*}</p>
+<p><br/><br/></p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Make predictions on the test data</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata<span class="o">=</span>test.data1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>test.data1<span class="o">$</span>default<span class="p">,</span> pred<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;no&#39;</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual default &quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction default &quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Confusion Matrix&quot;</span><span class="p">)</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Confusion Matrix&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction default : no</th><th scope="col">Prediction default : yes</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual default : no</th><td>93</td><td>24</td></tr>
+	<tr><th scope="row">Actual default : yes</th><td>27</td><td>96</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 7: Prediction<a rel="noopener" class="anchor-link" href="#Step-7:-Prediction">&#182;</a></h2><p>The classification decision tree model can now be used to make predictions.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;Prediction for defaulting (yes or no): missed_payment=&#39;none&#39;, education=&#39;postgraduate&#39;, age=42&quot;</span><span class="p">)</span>
+newdata1 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>missed_payment<span class="o">=</span><span class="s">&#39;no&#39;</span><span class="p">,</span> education<span class="o">=</span><span class="s">&#39;postgraduate&#39;</span><span class="p">,</span> age<span class="o">=</span><span class="m">42</span><span class="p">)</span>
+predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Prediction for defaulting (yes or no): missed_payment=&#39;missed&#39;, education=&#39;high_school&#39;, age=42&quot;</span><span class="p">)</span>
+newdata2 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>missed_payment<span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> education<span class="o">=</span><span class="s">&#39;high_school&#39;</span><span class="p">,</span> age<span class="o">=</span><span class="m">42</span><span class="p">)</span>
+predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Prediction for defaulting (yes or no): missed_payment=&#39;none&#39;, education=&#39;postgraduate&#39;, age=42&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> no
+<details>
+	<summary style="display:list-item;cursor:pointer;">
+		<strong>Levels</strong>:
+	</summary>
+	<ol class="list-inline">
+		<li>&#39;no&#39;</li>
+		<li>&#39;yes&#39;</li>
+	</ol>
+</details>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Prediction for defaulting (yes or no): missed_payment=&#39;missed&#39;, education=&#39;high_school&#39;, age=42&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> yes
+<details>
+	<summary style="display:list-item;cursor:pointer;">
+		<strong>Levels</strong>:
+	</summary>
+	<ol class="list-inline">
+		<li>&#39;no&#39;</li>
+		<li>&#39;yes&#39;</li>
+	</ol>
+</details>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 8: Loading the Data Set (for the Regression Decision Tree)<a rel="noopener" class="anchor-link" href="#Step-8:-Loading-the-Data-Set-(for-the-Regression-Decision-Tree)">&#182;</a></h2><p>You are an analyst working for the government and you have access to a set of historical data that can be used to study wage growth of the labor force. Governments are interested in studying wage growth patterns based on their economic agenda. This data set has other economic factors that are related to wage growth. You will use this data set to create models for wage growth.</p>
+<p>This block of R code will load the <strong>economic</strong> data set from a CSV file. It will then display the first six rows of the data. Here are the variables contained in the data set:</p>
+<table>
+<thead><tr>
+<th><div style="text-align: left;"> Variable </div></th>
+<th><div style="text-align: left;"> What does it represent? </div></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><div style="text-align: left;"> wage_growth </div></td>
+<td><div style="text-align: left;"> Wage growth rate </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> inflation </div></td>
+<td><div style="text-align: left;"> Rate of inflation </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> unemployment </div></td>
+<td><div style="text-align: left;"> Unemployment rate</div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> economy </div></td>
+<td><div style="text-align: left;"> Economy in recession or not in recession </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> gdp </div></td>
+<td><div style="text-align: left;"> GDP growth rate </div></td>
+</tr>
+</tbody>
+</table>
+<p>Note: This is a simulated data set based on a real-world problem.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Load the data set</span>
+economic <span class="o">&lt;-</span> read.csv<span class="p">(</span>file<span class="o">=</span><span class="s">&#39;economic.csv&#39;</span><span class="p">,</span> header<span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> sep<span class="o">=</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="c1"># Print the first six rows</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;head&quot;</span><span class="p">)</span>
+<span class="kp">head</span><span class="p">(</span>economic<span class="p">,</span> <span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;head&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A data.frame: 6 &#215; 6</caption>
+<thead>
+	<tr><th scope="col">wage_growth</th><th scope="col">inflation</th><th scope="col">unemployment</th><th scope="col">economy</th><th scope="col">education</th><th scope="col">gdp</th></tr>
+	<tr><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td> 7.30</td><td> 4.49</td><td>3.56</td><td>no_recession</td><td>college      </td><td> 6.27</td></tr>
+	<tr><td> 9.05</td><td> 9.59</td><td>2.42</td><td>no_recession</td><td>college      </td><td> 9.44</td></tr>
+	<tr><td>10.08</td><td>11.36</td><td>1.23</td><td>no_recession</td><td>post_graduate</td><td>18.29</td></tr>
+	<tr><td>10.98</td><td> 9.55</td><td>1.18</td><td>no_recession</td><td>post_graduate</td><td>19.96</td></tr>
+	<tr><td> 8.54</td><td> 8.63</td><td>2.54</td><td>no_recession</td><td>high_school  </td><td> 8.43</td></tr>
+	<tr><td> 9.75</td><td> 8.26</td><td>2.22</td><td>no_recession</td><td>college      </td><td>17.85</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 9: Splitting Data into Training and Testing Sets<a rel="noopener" class="anchor-link" href="#Step-9:-Splitting-Data-into-Training-and-Testing-Sets">&#182;</a></h2><p>In this step, you will split the data set into training and testing sets. The training set will be used to create the decision tree model and the testing set will be used to test the model that is created. The training set and testing set split will be 80% and 20%, respectively. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.80</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>economic<span class="p">))</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>economic<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data2 <span class="o">=</span> economic<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data2<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the testing set&quot;</span><span class="p">)</span>
+test.data2 <span class="o">=</span> economic<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+79
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the testing set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+20
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 10: Constructing the Regression Decision Tree<a rel="noopener" class="anchor-link" href="#Step-10:-Constructing-the-Regression-Decision-Tree">&#182;</a></h2><p>This step will create the decision tree regression model to predict wage growth using economy and inflation. Since we are now creating a regression tree, the method will be set to &quot;anova&quot;. The minimum split will be set to 10. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+
+<span class="kn">library</span><span class="p">(</span>rpart<span class="p">)</span>
+model2 <span class="o">&lt;-</span> rpart<span class="p">(</span>wage_growth <span class="o">~</span> economy <span class="o">+</span> inflation <span class="o">+</span> gdp<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;anova&quot;</span><span class="p">,</span> data<span class="o">=</span>train.data2<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>minsplit<span class="o">=</span><span class="m">10</span><span class="p">))</span>
+printcp<span class="p">(</span>model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Regression tree:
+rpart(formula = wage_growth ~ economy + inflation + gdp, data = train.data2, 
+    method = &quot;anova&quot;, control = rpart.control(minsplit = 10))
+
+Variables actually used in tree construction:
+[1] gdp       inflation
+
+Root node error: 614.68/79 = 7.7807
+
+n= 79 
+
+        CP nsplit rel error  xerror     xstd
+1 0.700601      0   1.00000 1.02934 0.137290
+2 0.109853      1   0.29940 0.34596 0.045181
+3 0.059054      2   0.18955 0.30416 0.045567
+4 0.020454      3   0.13049 0.22644 0.033865
+5 0.018098      4   0.11004 0.20723 0.029033
+6 0.011350      5   0.09194 0.21182 0.029647
+7 0.010000      6   0.08059 0.18480 0.026645
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 11: Cross Validation Error and Cost-Complexity<a rel="noopener" class="anchor-link" href="#Step-11:-Cross-Validation-Error-and-Cost-Complexity">&#182;</a></h2><p>This block of R code will plot cross validation errors against the cost-complexity parameter <strong>cp</strong>. This will assist you in selecting an appropriate model by pruning the tree. A horizontal red line will be drawn one standard error above the minimum error. In general, the largest <strong>cp</strong> value that achieves a cross validation error below the red line is chosen to prune the tree.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Visualize cross validation results</span>
+plotcp<span class="p">(</span>model2<span class="p">,</span> minline <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> lty <span class="o">=</span> <span class="m">3</span><span class="p">,</span> col <span class="o">=</span> <span class="m">2</span><span class="p">,</span> upper <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;splits&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 12: Pruning the Tree<a rel="noopener" class="anchor-link" href="#Step-12:-Pruning-the-Tree">&#182;</a></h2><p>A good choice of cp for pruning is often the leftmost value for which the mean lies below the horizontal red line. Using the plot in step 11, we will pick cp=0.019 and rerun the model setting the cp parameter to this value. 
+<br/><br/></p>
+<p><font color="red">**Do not change the seed value!**</font></p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">507690</span><span class="p">)</span>
+pruned_model2 <span class="o">&lt;-</span> rpart<span class="p">(</span>wage_growth <span class="o">~</span> economy <span class="o">+</span> inflation <span class="o">+</span> gdp<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;anova&quot;</span><span class="p">,</span>  data<span class="o">=</span>train.data2<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>cp <span class="o">=</span> <span class="m">0.019</span><span class="p">))</span>
+printcp<span class="p">(</span>pruned_model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Regression tree:
+rpart(formula = wage_growth ~ economy + inflation + gdp, data = train.data2, 
+    method = &quot;anova&quot;, control = rpart.control(cp = 0.019))
+
+Variables actually used in tree construction:
+[1] gdp       inflation
+
+Root node error: 614.68/79 = 7.7807
+
+n= 79 
+
+        CP nsplit rel error  xerror     xstd
+1 0.700601      0   1.00000 1.02934 0.137290
+2 0.109853      1   0.29940 0.34596 0.045181
+3 0.059054      2   0.18955 0.30416 0.045567
+4 0.020454      3   0.13049 0.23743 0.035955
+5 0.019000      4   0.11004 0.21898 0.031540
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 13: Plotting the Classification Decision Tree<a rel="noopener" class="anchor-link" href="#Step-13:-Plotting-the-Classification-Decision-Tree">&#182;</a></h2><p>This block of R code will provide a visual of the pruned decision tree model from the previous step.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kn">library</span><span class="p">(</span>rpart.plot<span class="p">)</span>
+rpart.plot<span class="p">(</span>pruned_model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 14: Root Mean Squared Error (RMSE)<a rel="noopener" class="anchor-link" href="#Step-14:-Root-Mean-Squared-Error-(RMSE)">&#182;</a></h2><p>In this step, you will calculate the Root Mean Squared Error (RMSE). RMSE is the standard deviation of prediction errors. Recall that the prediction errors are called residuals. RMSE is the standard deviation of residuals. It can be expressed as follows:
+<br/><br/></p>
+<p>\begin{equation*}
+RMSE = \sqrt{ \frac{\sum_{i=1}^{n} \ (\ predicted_i\ -\ observed_i\ )^2} { n }  } 
+\end{equation*}
+<br/><br/></p>
+<p>The code below implements a user-defined function called RMSE.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Here is a custom R function to calculate Root Mean Squared Error or RMSE for any regression model. The following function (called RMSE) will calculate the Root Mean Squared Error</span>
+<span class="c1"># based on the formula shown above.</span>
+RMSE <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>pred<span class="p">,</span> obs<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">return</span><span class="p">(</span><span class="kp">sqrt</span><span class="p">(</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>pred <span class="o">-</span> obs<span class="p">)</span><span class="o">^</span><span class="m">2</span> <span class="p">)</span><span class="o">/</span><span class="kp">length</span><span class="p">(</span>pred<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># Calculate RMSE </span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata<span class="o">=</span>test.data2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Root Mean Squared Error&quot;</span><span class="p">)</span>
+rmse <span class="o">&lt;-</span> RMSE<span class="p">(</span>pred<span class="p">,</span> test.data2<span class="o">$</span>wage_growth<span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>rmse<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Root Mean Squared Error&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+1.0558
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 15: Prediction<a rel="noopener" class="anchor-link" href="#Step-15:-Prediction">&#182;</a></h2><p>The regression decision tree model can now be used to make predictions.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;Predicted wage growth: economy=&#39;no_recession&#39;, inflation=2.10, gdp=2.5&quot;</span><span class="p">)</span>
+newdata3 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>economy<span class="o">=</span><span class="s">&#39;no_recession&#39;</span><span class="p">,</span> inflation<span class="o">=</span><span class="m">2.10</span><span class="p">,</span> gdp<span class="o">=</span><span class="m">2.5</span><span class="p">)</span>
+predicted_wage_growth <span class="o">=</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata3<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>predicted_wage_growth<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Predicted wage growth: economy=&#39;no_recession&#39;, inflation=3.50, gdp=6.8&quot;</span><span class="p">)</span>
+newdata4 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>economy<span class="o">=</span><span class="s">&#39;no_recession&#39;</span><span class="p">,</span> inflation<span class="o">=</span><span class="m">3.50</span><span class="p">,</span> gdp<span class="o">=</span><span class="m">6.8</span><span class="p">)</span>
+predicted_wage_growth <span class="o">=</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata4<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>predicted_wage_growth<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Predicted wage growth: economy=&#39;no_recession&#39;, inflation=2.10, gdp=2.5&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 4.2027
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Predicted wage growth: economy=&#39;no_recession&#39;, inflation=3.50, gdp=6.8&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 7.0595
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Your Code<a rel="noopener" class="anchor-link" href="#Your-Code">&#182;</a></h2><p>You have been asked to create decision tree models in the Module Six Problem Set. Review the Problem Set Report template to see the questions you will be answering about your models.</p>
+<p>Use the empty blocks below to write the R code for your models and get outputs. Then use the outputs to answer the questions in your problem set report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks or the scissor icon to remove empty code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.70</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>credit_default<span class="p">))</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>credit_default<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data1 <span class="o">=</span> credit_default<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data1<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the validation set&quot;</span><span class="p">)</span>
+test.data1 <span class="o">=</span> credit_default<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+420
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the validation set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+180
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+
+<span class="kn">library</span><span class="p">(</span>rpart<span class="p">)</span>
+model1 <span class="o">&lt;-</span> rpart<span class="p">(</span>default <span class="o">~</span> missed_payment <span class="o">+</span> credit_utilize <span class="o">+</span> assets<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;class&quot;</span><span class="p">,</span> data<span class="o">=</span>train.data1<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>minsplit<span class="o">=</span><span class="m">10</span><span class="p">))</span>
+printcp<span class="p">(</span>model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Classification tree:
+rpart(formula = default ~ missed_payment + credit_utilize + assets, 
+    data = train.data1, method = &quot;class&quot;, control = rpart.control(minsplit = 10))
+
+Variables actually used in tree construction:
+[1] assets         credit_utilize missed_payment
+
+Root node error: 198/420 = 0.47143
+
+n= 420 
+
+        CP nsplit rel error  xerror     xstd
+1 0.792929      0   1.00000 1.00000 0.051668
+2 0.045455      1   0.20707 0.20707 0.030720
+3 0.010101      3   0.11616 0.12121 0.024025
+4 0.010000      5   0.09596 0.13131 0.024943
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#plotcp(model) # Visualize cross validation results</span>
+plotcp<span class="p">(</span>model1<span class="p">,</span> minline <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> lty <span class="o">=</span> <span class="m">3</span><span class="p">,</span> col <span class="o">=</span> <span class="m">2</span><span class="p">,</span> upper <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;splits&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+pruned_model1 <span class="o">&lt;-</span> rpart<span class="p">(</span>default <span class="o">~</span> missed_payment <span class="o">+</span> credit_utilize <span class="o">+</span> assets<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;class&quot;</span><span class="p">,</span>  data<span class="o">=</span>train.data1<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>cp <span class="o">=</span> <span class="m">0.021</span><span class="p">))</span>
+printcp<span class="p">(</span>pruned_model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Classification tree:
+rpart(formula = default ~ missed_payment + credit_utilize + assets, 
+    data = train.data1, method = &quot;class&quot;, control = rpart.control(cp = 0.021))
+
+Variables actually used in tree construction:
+[1] assets         credit_utilize
+
+Root node error: 198/420 = 0.47143
+
+n= 420 
+
+        CP nsplit rel error  xerror     xstd
+1 0.792929      0   1.00000 1.00000 0.051668
+2 0.045455      1   0.20707 0.20707 0.030720
+3 0.021000      3   0.11616 0.12121 0.024025
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kn">library</span><span class="p">(</span>rpart.plot<span class="p">)</span>
+rpart.plot<span class="p">(</span>pruned_model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Make predictions on the test data</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata<span class="o">=</span>test.data1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>test.data1<span class="o">$</span>default<span class="p">,</span> pred<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;no&#39;</span><span class="p">,</span><span class="s">&#39;yes&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual default &quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction default &quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Confusion Matrix&quot;</span><span class="p">)</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TN <span class="o">=</span> <span class="m">74</span>
+TP <span class="o">=</span> <span class="m">100</span>
+FP <span class="o">=</span> <span class="m">4</span>
+FN <span class="o">=</span> <span class="m">2</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Accuracy:&#39;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP <span class="o">+</span> TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> TN <span class="o">+</span> FP <span class="o">+</span> FN<span class="p">))</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Precision:&#39;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span>TP<span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> FP<span class="p">))</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Recall&#39;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span>TP<span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> FN<span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Confusion Matrix&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction default : no</th><th scope="col">Prediction default : yes</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual default : no</th><td> 74</td><td>  4</td></tr>
+	<tr><th scope="row">Actual default : yes</th><td>  2</td><td>100</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy:&quot;
+[1] 0.9666667
+[1] &quot;Precision:&quot;
+[1] 0.9615385
+[1] &quot;Recall&quot;
+[1] 0.9803922
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;Prediction for defaulting (yes or no): missed_payment=&#39;none&#39;, assets=car_house, credit_utilize = 0.30&quot;</span><span class="p">)</span>
+newdata1 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>missed_payment<span class="o">=</span><span class="s">&#39;no&#39;</span><span class="p">,</span> credit_utilize <span class="o">=</span> <span class="m">0.30</span><span class="p">,</span> assets<span class="o">=</span><span class="s">&#39;car_house&#39;</span><span class="p">)</span>
+predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Prediction for defaulting (yes or no): missed_payment=&#39;missed&#39;, assets = none, credit_utilize = 0.30&quot;</span><span class="p">)</span>
+newdata2 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>missed_payment<span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> credit_utilize <span class="o">=</span> <span class="m">0.30</span><span class="p">,</span> assets <span class="o">=</span> <span class="s">&#39;none&#39;</span><span class="p">)</span>
+predict<span class="p">(</span>pruned_model1<span class="p">,</span> newdata2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;class&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Prediction for defaulting (yes or no): missed_payment=&#39;none&#39;, assets=car_house, credit_utilize = 0.30&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> no
+<details>
+	<summary style="display:list-item;cursor:pointer;">
+		<strong>Levels</strong>:
+	</summary>
+	<ol class="list-inline">
+		<li>&#39;no&#39;</li>
+		<li>&#39;yes&#39;</li>
+	</ol>
+</details>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Prediction for defaulting (yes or no): missed_payment=&#39;missed&#39;, assets = none, credit_utilize = 0.30&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> yes
+<details>
+	<summary style="display:list-item;cursor:pointer;">
+		<strong>Levels</strong>:
+	</summary>
+	<ol class="list-inline">
+		<li>&#39;no&#39;</li>
+		<li>&#39;yes&#39;</li>
+	</ol>
+</details>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Regression Decision Tree</span>
+<span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.80</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>economic<span class="p">))</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>economic<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data2 <span class="o">=</span> economic<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data2<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the testing set&quot;</span><span class="p">)</span>
+test.data2 <span class="o">=</span> economic<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+79
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the testing set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+20
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+
+<span class="kn">library</span><span class="p">(</span>rpart<span class="p">)</span>
+model2 <span class="o">&lt;-</span> rpart<span class="p">(</span>wage_growth <span class="o">~</span> economy <span class="o">+</span> unemployment <span class="o">+</span> gdp<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;anova&quot;</span><span class="p">,</span> data<span class="o">=</span>train.data2<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>minsplit<span class="o">=</span><span class="m">10</span><span class="p">))</span>
+printcp<span class="p">(</span>model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Regression tree:
+rpart(formula = wage_growth ~ economy + unemployment + gdp, data = train.data2, 
+    method = &quot;anova&quot;, control = rpart.control(minsplit = 10))
+
+Variables actually used in tree construction:
+[1] gdp          unemployment
+
+Root node error: 587.64/79 = 7.4385
+
+n= 79 
+
+        CP nsplit rel error  xerror     xstd
+1 0.708690      0  1.000000 1.02234 0.148393
+2 0.129011      1  0.291310 0.35817 0.048483
+3 0.059161      2  0.162299 0.23645 0.032876
+4 0.023760      3  0.103138 0.17992 0.027038
+5 0.015015      4  0.079378 0.17113 0.024920
+6 0.012324      5  0.064363 0.13864 0.020731
+7 0.010000      6  0.052039 0.13256 0.019947
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#plotcp(model) # Visualize cross validation results</span>
+plotcp<span class="p">(</span>model2<span class="p">,</span> minline <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> lty <span class="o">=</span> <span class="m">3</span><span class="p">,</span> col <span class="o">=</span> <span class="m">2</span><span class="p">,</span> upper <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;splits&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6751342</span><span class="p">)</span>
+pruned_model2 <span class="o">&lt;-</span> rpart<span class="p">(</span>wage_growth <span class="o">~</span> economy <span class="o">+</span> unemployment <span class="o">+</span> gdp<span class="p">,</span> method<span class="o">=</span><span class="s">&quot;anova&quot;</span><span class="p">,</span>  data<span class="o">=</span>train.data2<span class="p">,</span> control <span class="o">=</span> rpart.control<span class="p">(</span>cp <span class="o">=</span> <span class="m">0.015015</span><span class="p">))</span>
+printcp<span class="p">(</span>pruned_model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Regression tree:
+rpart(formula = wage_growth ~ economy + unemployment + gdp, data = train.data2, 
+    method = &quot;anova&quot;, control = rpart.control(cp = 0.015015))
+
+Variables actually used in tree construction:
+[1] gdp          unemployment
+
+Root node error: 587.64/79 = 7.4385
+
+n= 79 
+
+        CP nsplit rel error  xerror     xstd
+1 0.708690      0  1.000000 1.02234 0.148393
+2 0.129011      1  0.291310 0.35817 0.048483
+3 0.059161      2  0.162299 0.23645 0.032876
+4 0.023760      3  0.103138 0.23034 0.032585
+5 0.015015      4  0.079378 0.21376 0.030262
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kn">library</span><span class="p">(</span>rpart.plot<span class="p">)</span>
+rpart.plot<span class="p">(</span>pruned_model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[29]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Here is a custom R function to calculate Root Mean Squared Error or RMSE for any regression model. The following function (called RMSE) will calculate the Root Mean Squared Error</span>
+<span class="c1"># based on the formula shown above.</span>
+RMSE <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>pred<span class="p">,</span> obs<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">return</span><span class="p">(</span><span class="kp">sqrt</span><span class="p">(</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>pred <span class="o">-</span> obs<span class="p">)</span><span class="o">^</span><span class="m">2</span> <span class="p">)</span><span class="o">/</span><span class="kp">length</span><span class="p">(</span>pred<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># Calculate RMSE </span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata<span class="o">=</span>test.data2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Root Mean Squared Error&quot;</span><span class="p">)</span>
+rmse <span class="o">&lt;-</span> RMSE<span class="p">(</span>pred<span class="p">,</span> test.data2<span class="o">$</span>wage_growth<span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>rmse<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Root Mean Squared Error&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+1.0268
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[30]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;Predicted wage growth: economy=&#39;no_recession&#39;, unemployment=3.4, gdp=3.5&quot;</span><span class="p">)</span>
+newdata3 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>economy<span class="o">=</span><span class="s">&#39;no_recession&#39;</span><span class="p">,</span> unemployment<span class="o">=</span><span class="m">3.4</span><span class="p">,</span> gdp<span class="o">=</span><span class="m">3.5</span><span class="p">)</span>
+predicted_wage_growth <span class="o">=</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata3<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>predicted_wage_growth<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Predicted wage growth: economy=&#39;recession&#39;, unemployment=7.4, gdp=1.4&quot;</span><span class="p">)</span>
+newdata4 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>economy<span class="o">=</span><span class="s">&#39;recession&#39;</span><span class="p">,</span> unemployment<span class="o">=</span><span class="m">7.4</span><span class="p">,</span> gdp<span class="o">=</span><span class="m">1.4</span><span class="p">)</span>
+predicted_wage_growth <span class="o">=</span> predict<span class="p">(</span>pruned_model2<span class="p">,</span> newdata4<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;vector&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>predicted_wage_growth<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Predicted wage growth: economy=&#39;no_recession&#39;, unemployment=3.4, gdp=3.5&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 7.0814
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Predicted wage growth: economy=&#39;recession&#39;, unemployment=7.4, gdp=1.4&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 4.4025
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>End of Module Six Jupyter Notebook<a rel="noopener" class="anchor-link" href="#End-of-Module-Six-Jupyter-Notebook">&#182;</a></h2><p>Attach the HTML output along with your problem set report for the Module Six Problem Set. The HTML output can be downloaded by clicking <strong>File</strong>, then <strong>Download as</strong>, then <strong>HTML</strong>. Be sure to answer all of the questions in your problem set report.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">nrow</span><span class="p">(</span>credit_default<span class="p">)</span>
+<span class="kp">ncol</span><span class="p">(</span>credit_default<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+600
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+8
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[34]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">nrow</span><span class="p">(</span>economic<span class="p">)</span>
+<span class="kp">ncol</span><span class="p">(</span>economic<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+99
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+6
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1.5,
+								renderLatex: false,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
