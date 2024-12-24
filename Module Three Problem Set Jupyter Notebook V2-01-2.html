@@ -1,0 +1,1388 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1>Module Three Problem Set: Second Order Regression Models<a rel="noopener" class="anchor-link" href="#Module-Three-Problem-Set:-Second-Order-Regression-Models">&#182;</a></h1><p>In this notebook, you have been given a set of steps that will show you how to create a multiple regression model in R. It is very important to run the steps in order. Some steps depend on the outputs of earlier steps. Once you have run all the steps, you will be asked to create your own multiple regression model to help you answer the questions in Module Three the Problem Set. You are expected to write the R script yourself to answer these questions.</p>
+<p>Reminder: If you have not already reviewed the Problem Set Report template for your Module Three Problem Set, be sure to do so now. That will give you an idea of the questions you will need to answer with the outputs of this script. You should use the code you are given as reference when writing your own scripts.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Step 1: Loading the Data Set<a rel="noopener" class="anchor-link" href="#Step-1:-Loading-the-Data-Set">&#182;</a></h3><p>You are an analyst working for the government and you have access to a set of historical data that can be used to study wage growth of the labor force. Governments are interested in studying wage growth patterns based on their economic agenda. This data set has other economic factors that are related to wage growth. You will use this data set to create models for wage growth.</p>
+<p>This block of R code will load the <strong>economic</strong> data set from a CSV file. It will then display the first six rows of the data. Here are the variables contained in the data set:</p>
+<table>
+<thead><tr>
+<th><div style="text-align: left;"> Variable </div></th>
+<th><div style="text-align: left;"> What does it represent? </div></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><div style="text-align: left;"> wage_growth </div></td>
+<td><div style="text-align: left;"> Wage growth rate </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> inflation </div></td>
+<td><div style="text-align: left;"> Rate of inflation </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> unemployment </div></td>
+<td><div style="text-align: left;"> Unemployment rate</div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> economy </div></td>
+<td><div style="text-align: left;"> Economy in recession or not in recession </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> gdp </div></td>
+<td><div style="text-align: left;"> GDP growth rate </div></td>
+</tr>
+</tbody>
+</table>
+<p>Note: This is a simulated data set based on a real-world problem.</p>
+<p>Click the code section below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>economic <span class="o">&lt;-</span> read.csv<span class="p">(</span>file<span class="o">=</span><span class="s">&#39;economic.csv&#39;</span><span class="p">,</span> header<span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> sep<span class="o">=</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="c1"># Print the first six rows</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;head&quot;</span><span class="p">)</span>
+<span class="kp">head</span><span class="p">(</span>economic<span class="p">,</span> <span class="m">6</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;head&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A data.frame: 6 &#215; 6</caption>
+<thead>
+	<tr><th scope="col">wage_growth</th><th scope="col">inflation</th><th scope="col">unemployment</th><th scope="col">economy</th><th scope="col">education</th><th scope="col">gdp</th></tr>
+	<tr><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td> 7.30</td><td> 4.49</td><td>3.56</td><td>no_recession</td><td>college      </td><td> 6.27</td></tr>
+	<tr><td> 9.05</td><td> 9.59</td><td>2.42</td><td>no_recession</td><td>college      </td><td> 9.44</td></tr>
+	<tr><td>10.08</td><td>11.36</td><td>1.23</td><td>no_recession</td><td>post_graduate</td><td>18.29</td></tr>
+	<tr><td>10.98</td><td> 9.55</td><td>1.18</td><td>no_recession</td><td>post_graduate</td><td>19.96</td></tr>
+	<tr><td> 8.54</td><td> 8.63</td><td>2.54</td><td>no_recession</td><td>high_school  </td><td> 8.43</td></tr>
+	<tr><td> 9.75</td><td> 8.26</td><td>2.22</td><td>no_recession</td><td>college      </td><td>17.85</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 2: Scatterplot of Wage Growth and GDP Growth<a rel="noopener" class="anchor-link" href="#Step-2:-Scatterplot-of-Wage-Growth-and-GDP-Growth">&#182;</a></h2><p>In this step, you will use the <strong>plot</strong> function in R to print the scatterplot for variables <strong>wage_growth</strong> and <strong>gdp</strong> in the data set.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.<br/>
+NOTE: If the plot is not created, click the code section and hit the <strong>Run</strong> button again.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>plot<span class="p">(</span>economic<span class="o">$</span>gdp<span class="p">,</span> economic<span class="o">$</span>wage_growth<span class="p">,</span> 
+     main <span class="o">=</span> <span class="s">&quot;Scatterplot of Wage Growth and GDP&quot;</span><span class="p">,</span>
+     xlab <span class="o">=</span> <span class="s">&quot;GDP&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Wage Growth&quot;</span><span class="p">,</span>
+     col<span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">,</span> 
+     pch <span class="o">=</span> <span class="m">19</span><span class="p">,</span> frame <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 3: Scatterplot of Wage Growth and Inflation<a rel="noopener" class="anchor-link" href="#Step-3:-Scatterplot-of-Wage-Growth-and-Inflation">&#182;</a></h2><p>In this step, you will use the <strong>plot</strong> function in R to print the scatterplot for variables <strong>wage_growth</strong> and <strong>inflation</strong> in the data set.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.<br/>
+NOTE: If the plot is not created, click the code section and hit the <strong>Run</strong> button again.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>plot<span class="p">(</span>economic<span class="o">$</span>inflation<span class="p">,</span> economic<span class="o">$</span>wage_growth<span class="p">,</span> 
+     main <span class="o">=</span> <span class="s">&quot;Scatterplot of Wage Growth and Inflation&quot;</span><span class="p">,</span>
+     xlab <span class="o">=</span> <span class="s">&quot;Inflation&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Wage Growth&quot;</span><span class="p">,</span>
+     col<span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">,</span> 
+     pch <span class="o">=</span> <span class="m">19</span><span class="p">,</span> frame <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 4: Quadratic (Second Order) Model with One Quantitative Variable<a rel="noopener" class="anchor-link" href="#Step-4:-Quadratic-(Second-Order)-Model-with-One-Quantitative-Variable">&#182;</a></h2><p>In this step, you will create a second order multiple regression model for <strong>wage_growth</strong> as the response variable and <strong>gdp</strong> as the predictor variable.</p>
+<p>The general form of this second order regression model is:
+<br/><br/>
+\begin{equation*}
+\large E(y) = {\beta}_0 +\ {\beta}_1\ {x} +\ {\beta}_2\ {x}^2
+\end{equation*}
+<br/><br/></p>
+<p>The prediction regression model is:</p>
+<p><br/>
+\begin{equation*}
+\large \hat{y} = \hat{{\beta}_0} +\ \hat{{\beta}_1}\ {x}\ +\ \hat{{\beta}_2}\ {x}^2
+\end{equation*}
+<br/></p>
+<p>\begin{equation*}
+\text{where } \hat{y} \text{ is the predicted value of wage growth and }\ {x}\ \text{is GDP growth}
+\end{equation*}</p>
+<p>\begin{equation*}
+\hat{{\beta}_0} \text{,} \hspace{0.25cm} \hat{{\beta}_1} \text{, } \hspace{0.25cm} \hat{{\beta}_2} \text{  } \text{ are estimates of}
+\text{  } {\beta}_0\ \text{,} \hspace{0.25cm} {\beta}_1\ \text{,} \hspace{0.25cm} {\beta}_2\ \text{ respectively  }
+\end{equation*}
+<br/><br/></p>
+<p>The following code block will create this second order model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Create the second order regression model and print the statistics</span>
+model1 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> gdp <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>gdp<span class="o">^</span><span class="m">2</span><span class="p">),</span> data<span class="o">=</span>economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ gdp + I(gdp^2), data = economic)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.4028 -0.8161 -0.2157  0.7948  2.9852 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.713275   0.365647   1.951    0.054 .  
+gdp          1.114431   0.082167  13.563  &lt; 2e-16 ***
+I(gdp^2)    -0.032609   0.003843  -8.485 2.64e-13 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.147 on 96 degrees of freedom
+Multiple R-squared:  0.8338,	Adjusted R-squared:  0.8303 
+F-statistic: 240.7 on 2 and 96 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3>Interpretation of Beta Estimates<a rel="noopener" class="anchor-link" href="#Interpretation-of-Beta-Estimates">&#182;</a></h3><p>From the output in previous step, the regression model is:
+<br/><br/>
+\begin{equation*}
+\large \hat{y} = 0.7133\ +\ 1.1144\ {x} -\ 0.0326\ {x}^2
+\end{equation*}
+<br/><br/></p>
+<ul>
+<li>Note that the estimated coefficient of term x is 1.1144. In the presence of the squared term (x^2), it no longer represents a slope coefficient. The estimated coefficient of x does not have a meaningful interpretation. 
+<br/><br/></li>
+<li>The estimated coefficient of term x^2 is -0.0326. Since the sign of this coefficient is &quot;-&quot; (negative), it indicates a curve with downward concavity. This confirms the relationship observed in step 2. A &quot;+&quot; (positive) sign for the estimate would indicate a curve relationship that has upward concavity. Thus, the estimated coefficient of term x^2 represents the rate of curvature.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 5: Prediction, Prediction Interval, and Confidence Interval<a rel="noopener" class="anchor-link" href="#Step-5:-Prediction,-Prediction-Interval,-and-Confidence-Interval">&#182;</a></h2><p>In this step, you will predict the wage growth when the GDP is growing at 1.70%. You will also obtain a 90% prediction interval and confidence interval for this prediction. Note that this observation is not from the data set that was used to create this model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>gdp<span class="o">=</span><span class="m">1.70</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;prediction interval&quot;</span><span class="p">)</span>
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model1<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;predict&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;confidence interval&quot;</span><span class="p">)</span>
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model1<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;confidence&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;prediction interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.5136</td><td>0.5625</td><td>4.4646</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;confidence interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.5136</td><td>2.092</td><td>2.9351</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 6: Complete Second Order Model (Two Quantitative Variables)<a rel="noopener" class="anchor-link" href="#Step-6:-Complete-Second-Order-Model-(Two-Quantitative-Variables)">&#182;</a></h2><p>In this step, you will create a second order multiple regression model for <strong>wage_growth</strong> as the response variable and <strong>inflation</strong> and <strong>gdp</strong> as predictor variables. A complete second order model contains all of the terms in a first order model, as well as interaction terms, and second order terms involving squares for only the quantitative independent variables.</p>
+<p>The general form of this regression model is:
+<br/></p>
+<p>\begin{equation*}
+\large E(y) = {\beta}_0\ +\ {\beta}_1\ {x}_1\ +\  {\beta}_2\ {x}_2\ +\ {\beta}_3\ {x}_1{x}_2 + \ {\beta}_4\ {x}_1^2\ +\ {\beta}_5\ {x}_2^2\ 
+\end{equation*}</p>
+<p><br/></p>
+<p>The prediction regression model is:
+<br/></p>
+<p>\begin{equation*}
+\large \hat{y} = \hat{{\beta}_0}\ +\ \hat{{\beta}_1}\ {x}_1\ +\  \hat{{\beta}_2}\ {x}_2\ +\ \hat{{\beta}_3}\ {x}_1{x}_2 + \ \hat{{\beta}_4}\ {x}_1^2\ +\ \hat{{\beta}_5}\ {x}_2^2\ 
+\end{equation*}</p>
+<p>\begin{equation*}
+\text{where } \hat{y} \text{ is the predicted value of the wage growth,}\ {x}_1\ \text{is Inflation, and }\ {x}_2\ \text{is GDP growth}
+\end{equation*}</p>
+<p>\begin{equation*}
+\hat{{\beta}_0} \text{,} \hspace{0.25cm} \hat{{\beta}_1} \text{, } \hspace{0.25cm} \hat{{\beta}_2} \text{,} \hspace{0.25cm} \hat{{\beta}_3} \text{,} \hspace{0.25cm} \hat{{\beta}_4} \text{,} \hspace{0.25cm} \hat{{\beta}_5} \text{  } \text{ are estimates of }
+\text{  } {\beta}_0\ \text{,} \hspace{0.25cm} {\beta}_1\ \text{,} \hspace{0.25cm} {\beta}_2\ \text{,} \hspace{0.25cm} {\beta}_3\ \text{,} \hspace{0.25cm} {\beta}_4\ \text{,} \hspace{0.25cm} {\beta}_5\ \text{ respectively  }
+\end{equation*}
+<br/><br/></p>
+<p>The following code block will create this complete second order model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Create the second order regression model and print the statistics</span>
+model2 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> inflation <span class="o">+</span> gdp <span class="o">+</span> inflation<span class="o">:</span>gdp <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>inflation<span class="o">^</span><span class="m">2</span><span class="p">)</span> <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>gdp<span class="o">^</span><span class="m">2</span><span class="p">)</span> <span class="p">,</span> data<span class="o">=</span>economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ inflation + gdp + inflation:gdp + 
+    I(inflation^2) + I(gdp^2), data = economic)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.51590 -0.55715 -0.08018  0.62653  2.09057 
+
+Coefficients:
+                Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    -0.395208   0.365361  -1.082   0.2822    
+inflation       1.060687   0.195710   5.420 4.68e-07 ***
+gdp             0.545357   0.110379   4.941 3.42e-06 ***
+I(inflation^2) -0.027371   0.019822  -1.381   0.1706    
+I(gdp^2)       -0.003176   0.005775  -0.550   0.5837    
+inflation:gdp  -0.034358   0.017778  -1.933   0.0563 .  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.8512 on 93 degrees of freedom
+Multiple R-squared:  0.9113,	Adjusted R-squared:  0.9065 
+F-statistic: 191.1 on 5 and 93 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 7: Prediction, Prediction Interval, and Confidence Interval<a rel="noopener" class="anchor-link" href="#Step-7:-Prediction,-Prediction-Interval,-and-Confidence-Interval">&#182;</a></h2><p>In this step, you will predict the wage growth when Inflation is 2.1% and the GDP is growing at 1.70%. You will also obtain a 90% prediction interval and confidence interval for this prediction. Note that this observation is not from the data set that was used to create this model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>inflation<span class="o">=</span><span class="m">2.1</span><span class="p">,</span> gdp<span class="o">=</span><span class="m">1.70</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;prediction interval&quot;</span><span class="p">)</span>
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model2<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;predict&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;confidence interval&quot;</span><span class="p">)</span>
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model2<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;confidence&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;prediction interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.5068</td><td>1.056</td><td>3.9576</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;confidence interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.5068</td><td>2.1831</td><td>2.8305</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 8: Complete Second Order Model (One Quantitative and One Qualitative Variable)<a rel="noopener" class="anchor-link" href="#Step-8:-Complete-Second-Order-Model-(One-Quantitative-and-One-Qualitative-Variable)">&#182;</a></h2><p>In this step, you will create a second order multiple regression model for <strong>wage_growth</strong> as the response variable and <strong>inflation</strong>, <strong>economy</strong> as predictor variables. A complete second order model contains all of the terms in a first order model, second order terms involving squares of only the quantitative independent variables, and interaction terms.</p>
+<p>The general form of the regression model is:
+<br/></p>
+<p>\begin{equation*}
+\large E(y) = {\beta}_0\ +\ {\beta}_1\ {x}_1\ +\  {\beta}_2\ {x}_2\ +\ {\beta}_3\ {x}_1\ {x}_2\ +\ {\beta}_4\ {x}_1^2\ +\ {\beta}_5\ {x}_1^2\ {x}_2
+\end{equation*}</p>
+<p><br/>
+The prediction regression model is:
+<br/></p>
+<p>\begin{equation*}
+\large \hat{y} = \hat{{\beta}_0}\ +\ \hat{{\beta}_1}\ {x}_1\ +\  \hat{{\beta}_2}\ {x}_2\ +\ \hat{{\beta}_3}\ {x}_1\ {x}_2\ +\ \hat{{\beta}_4}\ {x}_1^2\ +\ \hat{{\beta}_5}\ {x}_1^2\ {x}_2
+\end{equation*}</p>
+<p>\begin{equation*}
+\text{where } \hat{y} \text{ is the predicted value of the wage growth,}\ {x}_1\ \text{is Inflation, and }\ {x}_2\ \text{is Economy}
+\end{equation*}</p>
+<p>\begin{equation*}
+\hat{{\beta}_0} \text{,} \hspace{0.25cm} \hat{{\beta}_1} \text{, } \hspace{0.25cm} \hat{{\beta}_2} \text{,} \hspace{0.25cm} \hat{{\beta}_3} \text{,} \hspace{0.25cm} \hat{{\beta}_4} \text{,} \hspace{0.25cm} \hat{{\beta}_5} \text{  } \text{ are estimates of }
+\text{  } {\beta}_0\ \text{,} \hspace{0.25cm} {\beta}_1\ \text{,} \hspace{0.25cm} {\beta}_2\ \text{,} \hspace{0.25cm} {\beta}_3\ \text{,} \hspace{0.25cm} {\beta}_4\ \text{,} \hspace{0.25cm} {\beta}_5\ \text{ respectively  }
+\end{equation*}
+<br/><br/></p>
+<p>The following code block will create this complete second-order model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Create the second order regression model and print the statistics</span>
+model3 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> inflation <span class="o">+</span> economy <span class="o">+</span> inflation<span class="o">:</span>economy <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>inflation<span class="o">^</span><span class="m">2</span><span class="p">)</span> <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>inflation<span class="o">^</span><span class="m">2</span><span class="p">)</span><span class="o">:</span>economy<span class="p">,</span> data<span class="o">=</span>economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model3<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ inflation + economy + inflation:economy + 
+    I(inflation^2) + I(inflation^2):economy, data = economic)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.7108 -0.6342  0.1124  0.7136  1.9368 
+
+Coefficients:
+                                Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                      1.38806    0.73653   1.885  0.06261 .  
+inflation                        1.33488    0.22565   5.916 5.45e-08 ***
+economyrecession                -3.48576    2.14620  -1.624  0.10773    
+I(inflation^2)                  -0.05175    0.01598  -3.239  0.00167 ** 
+inflation:economyrecession       1.41440    1.64178   0.862  0.39118    
+economyrecession:I(inflation^2) -0.16300    0.30307  -0.538  0.59197    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.015 on 93 degrees of freedom
+Multiple R-squared:  0.8738,	Adjusted R-squared:  0.867 
+F-statistic: 128.7 on 5 and 93 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Step 9: Prediction, Prediction Interval, and Confidence Interval<a rel="noopener" class="anchor-link" href="#Step-9:-Prediction,-Prediction-Interval,-and-Confidence-Interval">&#182;</a></h2><p>In this step, you will predict the wage growth when the inflation is 2.1% and the economy is in recession. You will also obtain a 90% prediction interval and confidence interval for this prediction. Note that this observation is not from the data set that was used to create this model.</p>
+<p>Click the block of code below and hit the <strong>Run</strong> button above.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>inflation<span class="o">=</span><span class="m">2.1</span><span class="p">,</span> economy<span class="o">=</span><span class="s">&#39;recession&#39;</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;prediction interval&quot;</span><span class="p">)</span>
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model3<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;predict&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;confidence interval&quot;</span><span class="p">)</span>
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model3<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;confidence&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span> 
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;prediction interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.7287</td><td>0.9822</td><td>4.4753</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;confidence interval&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>2.7287</td><td>2.2767</td><td>3.1807</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Your Code<a rel="noopener" class="anchor-link" href="#Your-Code">&#182;</a></h2><p>You have been asked to create regression models in the Module Three Problem Set. Review the Problem Set Report template to see the questions you will be answering about your models.</p>
+<p>Use the empty blocks below to write the R code for your models and get outputs. Then use the outputs to answer the questions in your problem set report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks or the scissor icon to remove empty code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Scatter plot of wage growth and unemployment</span>
+plot<span class="p">(</span>economic<span class="o">$</span>unemployment<span class="p">,</span> economic<span class="o">$</span>wage_growth<span class="p">,</span>
+    main <span class="o">=</span> <span class="s">&quot;Scatterplot of Wage Growth and Unemployment&quot;</span><span class="p">,</span>
+    xlab <span class="o">=</span> <span class="s">&quot;Unemployment&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Wage Growth&quot;</span><span class="p">,</span>
+    col<span class="o">=</span><span class="s">&quot;red&quot;</span><span class="p">,</span>
+    pch <span class="o">=</span> <span class="m">19</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Create the second order regressino model for wage growth using unemployment as the independent variable</span>
+model1 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> unemployment <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>unemployment<span class="o">^</span><span class="m">2</span><span class="p">),</span> data<span class="o">=</span>economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model1<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ unemployment + I(unemployment^2), 
+    data = economic)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7515 -0.4407  0.0601  0.4287  1.9382 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)       12.234206   0.208069   58.80  &lt; 2e-16 ***
+unemployment      -1.743170   0.091052  -19.14  &lt; 2e-16 ***
+I(unemployment^2)  0.067408   0.007287    9.25 6.07e-15 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.6681 on 96 degrees of freedom
+Multiple R-squared:  0.9436,	Adjusted R-squared:  0.9424 
+F-statistic:   803 on 2 and 96 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># What is the predicted wage growth if unemployment is 2.54?</span>
+<span class="c1"># What is the 95% prediction/confidence interval for wage growth?</span>
+newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>unemployment <span class="o">=</span> <span class="m">2.54</span><span class="p">)</span>
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model1<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;predict&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model1<span class="p">,</span> newdata<span class="p">,</span> interval<span class="o">=</span><span class="s">&quot;confidence&quot;</span><span class="p">,</span> level<span class="o">=</span><span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>8.2414</td><td>6.9071</td><td>9.5758</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>8.2414</td><td>8.0936</td><td>8.3893</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Second Order Model with Two Quantitative Variables</span>
+<span class="c1"># Create model for wage growth as the response variable and unemployment and GDP as predictor variables</span>
+model2 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> unemployment <span class="o">+</span> gdp <span class="o">+</span> unemployment<span class="o">:</span>gdp <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>unemployment<span class="o">^</span><span class="m">2</span><span class="p">)</span> <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>gdp<span class="o">^</span><span class="m">2</span><span class="p">),</span> data <span class="o">=</span> economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model2<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ unemployment + gdp + unemployment:gdp + 
+    I(unemployment^2) + I(gdp^2), data = economic)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.37686 -0.35318  0.01594  0.33860  1.55345 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)        8.989434   1.014702   8.859 5.30e-14 ***
+unemployment      -1.152823   0.244170  -4.721 8.26e-06 ***
+gdp                0.283691   0.140811   2.015  0.04682 *  
+I(unemployment^2)  0.037685   0.013069   2.884  0.00489 ** 
+I(gdp^2)          -0.006599   0.004299  -1.535  0.12815    
+unemployment:gdp  -0.006282   0.021119  -0.297  0.76678    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.5807 on 93 degrees of freedom
+Multiple R-squared:  0.9587,	Adjusted R-squared:  0.9565 
+F-statistic:   432 on 5 and 93 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># What is the predicted wage growth if unemployment is 2.50 and GDP growth is 6.50?</span>
+<span class="c1"># What is the 95% prediction/confidence interval for wage growth?</span>
+newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>unemployment <span class="o">=</span> <span class="m">2.50</span><span class="p">,</span> gdp <span class="o">=</span> <span class="m">6.50</span><span class="p">)</span>
+
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model2<span class="p">,</span> newdata<span class="p">,</span> interval <span class="o">=</span> <span class="s">&quot;predict&quot;</span><span class="p">,</span> level <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model2<span class="p">,</span> newdata<span class="p">,</span> interval <span class="o">=</span> <span class="s">&quot;confidence&quot;</span><span class="p">,</span> level <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>7.806</td><td>6.6315</td><td>8.9805</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>7.806</td><td>7.583</td><td>8.0289</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Second Order Model with One Quantitative and One Qualitative Variable</span>
+<span class="c1"># Create second order model for wage growth using unemployment and economy as predictors</span>
+model3 <span class="o">&lt;-</span> lm<span class="p">(</span>wage_growth <span class="o">~</span> unemployment <span class="o">+</span> economy <span class="o">+</span> unemployment<span class="o">:</span>economy <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>unemployment<span class="o">^</span><span class="m">2</span><span class="p">)</span> <span class="o">+</span> <span class="kp">I</span><span class="p">(</span>unemployment<span class="o">^</span><span class="m">2</span><span class="p">)</span><span class="o">:</span>economy<span class="p">,</span> data <span class="o">=</span> economic<span class="p">)</span>
+<span class="kp">summary</span><span class="p">(</span>model3<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+lm(formula = wage_growth ~ unemployment + economy + unemployment:economy + 
+    I(unemployment^2) + I(unemployment^2):economy, data = economic)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.77220 -0.35522  0.04877  0.42602  1.90778 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                        12.36072    0.27055  45.687  &lt; 2e-16 ***
+unemployment                       -1.80834    0.14236 -12.703  &lt; 2e-16 ***
+economyrecession                   -2.70404    1.08221  -2.499   0.0142 *  
+I(unemployment^2)                   0.07574    0.01460   5.188 1.24e-06 ***
+unemployment:economyrecession       0.69359    0.30901   2.245   0.0272 *  
+economyrecession:I(unemployment^2) -0.04358    0.02206  -1.976   0.0512 .  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.6551 on 93 degrees of freedom
+Multiple R-squared:  0.9475,	Adjusted R-squared:  0.9446 
+F-statistic: 335.4 on 5 and 93 DF,  p-value: &lt; 2.2e-16
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># What is the predicted wage growth if unemployment is 2.50 and the economy is not in recession</span>
+<span class="c1"># *** Use single quotes when setting the value for economy </span>
+<span class="c1"># What is the 95% prediction/confidence interval for wage growth?</span>
+newdata <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>unemployment <span class="o">=</span> <span class="m">2.50</span><span class="p">,</span> economy <span class="o">=</span> <span class="s">&#39;no_recession&#39;</span><span class="p">)</span>
+
+prediction_pred_int <span class="o">&lt;-</span> predict<span class="p">(</span>model3<span class="p">,</span> newdata<span class="p">,</span> interval <span class="o">=</span> <span class="s">&quot;predict&quot;</span><span class="p">,</span> level <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_pred_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+prediction_conf_int <span class="o">&lt;-</span> predict<span class="p">(</span>model3<span class="p">,</span> newdata<span class="p">,</span> interval <span class="o">=</span> <span class="s">&quot;confidence&quot;</span><span class="p">,</span> level <span class="o">=</span> <span class="m">0.95</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>prediction_conf_int<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+<span class="kp">ncol</span><span class="p">(</span>economic<span class="p">)</span>
+<span class="kp">nrow</span><span class="p">(</span>economic<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>8.3132</td><td>7.003</td><td>9.6235</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 1 &#215; 3 of type dbl</caption>
+<thead>
+	<tr><th scope="col">fit</th><th scope="col">lwr</th><th scope="col">upr</th></tr>
+</thead>
+<tbody>
+	<tr><td>8.3132</td><td>8.1573</td><td>8.4692</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+6
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+99
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>End of Module Three Jupyter Notebook<a rel="noopener" class="anchor-link" href="#End-of-Module-Three-Jupyter-Notebook">&#182;</a></h2><p>Attach the HTML output along with your problem set report for the Module Three Problem Set. The HTML output can be downloaded by clicking <strong>File</strong>, then <strong>Download as</strong>, then <strong>HTML</strong>. Be sure to answer all of the questions in your problem set report.</p>
+
+</div>
+</div>
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1.5,
+								renderLatex: false,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
