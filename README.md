@@ -3,15 +3,15 @@ Applied Statistics
 
 [Module One](https://github.com/Jfarquhar33/MAT-303/tree/Module-One)
 
-## Module Two
+[Module Two](https://github.com/Jfarquhar33/MAT-303/tree/Module-Two)
 
-## Module Three
+[Module Three](https://github.com/Jfarquhar33/MAT-303/tree/Module-three)
 
-## Module Four
+[Module Four](https://github.com/Jfarquhar33/MAT-303/tree/Module-Four)
 
-## Module Five
+[Module Five](https://github.com/Jfarquhar33/MAT-303/tree/Module-Five)
 
-## Module Six
+[Module Six](https://github.com/Jfarquhar33/MAT-303/tree/Module-Six)
 
-## Module Seven
+[## Module Seven](https://github.com/Jfarquhar33/MAT-303/tree/Module-Seven)
 
