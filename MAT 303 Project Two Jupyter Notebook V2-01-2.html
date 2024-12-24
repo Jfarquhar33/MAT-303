@@ -1,0 +1,2144 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1>Project Two: Logistic Regression and Random Forests<a rel="noopener" class="anchor-link" href="#Project-Two:-Logistic-Regression-and-Random-Forests">&#182;</a></h1><p>For Project Two, you have been asked to create different models analyzing a Heart Disease data set. Before beginning work on the project, be sure to read through the Project Two Guidelines and Rubric to understand what you need to do and how you will be graded on this assignment. Be sure to carefully review the Project Two Summary Report template, which contains all of the questions that you will need to answer about the regression analyses you are performing.</p>
+<p>For this project, you will be writing all the scripts yourself. You may reference the textbook and your previous work on the problem sets to help you write the scripts.</p>
+<h3>Scenario<a rel="noopener" class="anchor-link" href="#Scenario">&#182;</a></h3><p>You are a data analyst researching risk factors for heart disease at a university hospital. You have access to a large set of historical data that you can use to analyze patterns between different health indicators (e.g. fasting blood sugar, maximum heart rate, etc.) and the presence of heart disease. You have been asked to create different logistic regression models that predict whether or not a person is at risk for heart disease. A model like this could eventually be used to evaluate medical records and look for risks that might not be obvious to human doctors. You have also been asked to create a classification random forest model to predict the risk of heart disease and a regression random forest model to predict the maximum heart rate achieved.</p>
+<p>There are several variables in this data set, but you will be working with the following important variables:</p>
+<table>
+<thead><tr>
+<th><div style="text-align: left;"> Variable </div></th>
+<th><div style="text-align: left;"> What does it represent? </div></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><div style="text-align: left;"> age </div></td>
+<td><div style="text-align: left;"> The person&#39;s age in years </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> sex </div></td>
+<td><div style="text-align: left;"> The person&#39;s sex (1 = male, 0 = female) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> cp </div></td>
+<td><div style="text-align: left;"> The type of chest pain experienced (0=no pain, 1=typical angina, 2=atypical angina, 3=non-anginal pain) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> trestbps </div></td>
+<td><div style="text-align: left;"> The person&#39;s resting blood pressure </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> chol </div></td>
+<td><div style="text-align: left;"> The person&#39;s cholesterol measurement in mg/dl </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> fbs </div></td>
+<td><div style="text-align: left;"> The person&#39;s fasting blood sugar is greater than 120 mg/dl (1 = true, 0 = false) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> restecg </div></td>
+<td><div style="text-align: left;"> Resting electrocardiographic measurement (0=normal, 1=having ST-T wave abnormality, 2=showing probable or definite left ventricular hypertrophy by Estes&#39; criteria) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> thalach </div></td>
+<td><div style="text-align: left;"> The person&#39;s maximum heart rate achieved </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> exang </div></td>
+<td><div style="text-align: left;"> Exercise-induced angina (1=yes, 0=no) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> oldpeak </div></td>
+<td><div style="text-align: left;"> ST depression induced by exercise relative to rest (&#39;ST&#39; relates to positions on the ECG plot) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> slope </div></td>
+<td><div style="text-align: left;"> The slope of the peak exercise ST segment (1=upsloping, 2=flat, 3=downsloping) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> ca </div></td>
+<td><div style="text-align: left;"> The number of major vessels (0-3) </div></td>
+</tr>
+<tr>
+<td><div style="text-align: left;"> target </div></td>
+<td><div style="text-align: left;"> Heart disease (0=no, 1=yes) </div></td>
+</tr>
+</tbody>
+</table>
+<hr/>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Install Libraries<a rel="noopener" class="anchor-link" href="#Install-Libraries">&#182;</a></h2><p>In the following code block, you will install appropriate libraries to use in this project.</p>
+<p>Click the <strong>Run</strong> button on the toolbar to run this code.
+<br/><br/>
+<font color="red">**Note:** The code section below will first install three R packages: &quot;ResourceSelection&quot;, &quot;pROC&quot; and &quot;rpart.plot&quot;. Please do not move to the next step until the packages are fully installed. This will take some time. Once the installation is complete, this step will print first 6 rows of the data set.</font></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span><span class="s">&quot;This step will first install three R packages. Please wait until the packages are fully installed.&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Once the installation is complete, this step will print &#39;Installation complete!&#39;&quot;</span><span class="p">)</span>
+
+install.packages<span class="p">(</span><span class="s">&quot;ResourceSelection&quot;</span><span class="p">)</span>
+install.packages<span class="p">(</span><span class="s">&quot;pROC&quot;</span><span class="p">)</span>
+install.packages<span class="p">(</span><span class="s">&quot;rpart.plot&quot;</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Installation complete!&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;This step will first install three R packages. Please wait until the packages are fully installed.&quot;
+[1] &quot;Once the installation is complete, this step will print &#39;Installation complete!&#39;&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Installing package into &#39;/home/codio/R/x86_64-pc-linux-gnu-library/3.4&#39;
+(as &#39;lib&#39; is unspecified)
+Installing package into &#39;/home/codio/R/x86_64-pc-linux-gnu-library/3.4&#39;
+(as &#39;lib&#39; is unspecified)
+Installing package into &#39;/home/codio/R/x86_64-pc-linux-gnu-library/3.4&#39;
+(as &#39;lib&#39; is unspecified)
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Installation complete!&quot;
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Prepare Your Data Set<a rel="noopener" class="anchor-link" href="#Prepare-Your-Data-Set">&#182;</a></h2><p>In the following code block, you have been given the R code to prepare your data set.</p>
+<p>Click the <strong>Run</strong> button on the toolbar to run this code.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span>heart_data <span class="o">&lt;-</span> read.csv<span class="p">(</span>file<span class="o">=</span><span class="s">&quot;heart_disease.csv&quot;</span><span class="p">,</span> header<span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> sep<span class="o">=</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="c1"># Converting appropriate variables to factors  </span>
+heart_data <span class="o">&lt;-</span> <span class="kp">within</span><span class="p">(</span>heart_data<span class="p">,</span> <span class="p">{</span>
+   target <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>target<span class="p">)</span>
+   sex <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>sex<span class="p">)</span>
+   cp <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>cp<span class="p">)</span>
+   fbs <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>fbs<span class="p">)</span>
+   restecg <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>restecg<span class="p">)</span>
+   exang <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>exang<span class="p">)</span>
+   slope <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>slope<span class="p">)</span>
+   ca <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>ca<span class="p">)</span>
+   thal <span class="o">&lt;-</span> <span class="kp">factor</span><span class="p">(</span>thal<span class="p">)</span>
+<span class="p">})</span>
+
+<span class="kp">head</span><span class="p">(</span>heart_data<span class="p">,</span> <span class="m">10</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of variables&quot;</span><span class="p">)</span>
+<span class="kp">ncol</span><span class="p">(</span>heart_data<span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows&quot;</span><span class="p">)</span>
+<span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A data.frame: 10 &#215; 14</caption>
+<thead>
+	<tr><th scope="col">age</th><th scope="col">sex</th><th scope="col">cp</th><th scope="col">trestbps</th><th scope="col">chol</th><th scope="col">fbs</th><th scope="col">restecg</th><th scope="col">thalach</th><th scope="col">exang</th><th scope="col">oldpeak</th><th scope="col">slope</th><th scope="col">ca</th><th scope="col">thal</th><th scope="col">target</th></tr>
+	<tr><th scope="col">&lt;int&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th><th scope="col">&lt;fct&gt;</th></tr>
+</thead>
+<tbody>
+	<tr><td>62</td><td>1</td><td>2</td><td>130</td><td>231</td><td>0</td><td>1</td><td>146</td><td>0</td><td>1.8</td><td>1</td><td>3</td><td>3</td><td>1</td></tr>
+	<tr><td>58</td><td>0</td><td>0</td><td>130</td><td>197</td><td>0</td><td>1</td><td>131</td><td>0</td><td>0.6</td><td>1</td><td>0</td><td>2</td><td>1</td></tr>
+	<tr><td>60</td><td>0</td><td>3</td><td>150</td><td>240</td><td>0</td><td>1</td><td>171</td><td>0</td><td>0.9</td><td>2</td><td>0</td><td>2</td><td>1</td></tr>
+	<tr><td>63</td><td>1</td><td>0</td><td>140</td><td>187</td><td>0</td><td>0</td><td>144</td><td>1</td><td>4.0</td><td>2</td><td>2</td><td>3</td><td>0</td></tr>
+	<tr><td>62</td><td>1</td><td>0</td><td>120</td><td>267</td><td>0</td><td>1</td><td> 99</td><td>1</td><td>1.8</td><td>1</td><td>2</td><td>3</td><td>0</td></tr>
+	<tr><td>63</td><td>0</td><td>2</td><td>135</td><td>252</td><td>0</td><td>0</td><td>172</td><td>0</td><td>0.0</td><td>2</td><td>0</td><td>2</td><td>1</td></tr>
+	<tr><td>43</td><td>1</td><td>0</td><td>150</td><td>247</td><td>0</td><td>1</td><td>171</td><td>0</td><td>1.5</td><td>2</td><td>0</td><td>2</td><td>1</td></tr>
+	<tr><td>42</td><td>1</td><td>2</td><td>120</td><td>240</td><td>1</td><td>1</td><td>194</td><td>0</td><td>0.8</td><td>0</td><td>0</td><td>3</td><td>1</td></tr>
+	<tr><td>59</td><td>1</td><td>2</td><td>126</td><td>218</td><td>1</td><td>1</td><td>134</td><td>0</td><td>2.2</td><td>1</td><td>1</td><td>1</td><td>0</td></tr>
+	<tr><td>48</td><td>1</td><td>0</td><td>124</td><td>274</td><td>0</td><td>0</td><td>166</td><td>0</td><td>0.5</td><td>1</td><td>0</td><td>3</td><td>0</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of variables&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+14
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+303
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Model #1 - First Logistic Regression Model<a rel="noopener" class="anchor-link" href="#Model-#1---First-Logistic-Regression-Model">&#182;</a></h2><p>You have been asked to create a logistic regression model for heart disease <em>(target)</em> using the variables age <em>(age)</em>, resting blood pressure <em>(trestbps)</em>, exercised induced angina (exang) and maximum heart rate achieved <em>(thalach)</em>. Before writing any code, review Section 3 of the Summary Report template to see the questions you will be answering about your logistic regression model.</p>
+<p>Run your scripts to get the outputs of your regression analysis. Then use the outputs to answer the questions in your summary report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Logistic multiple regression model</span>
+logit <span class="o">&lt;-</span> glm<span class="p">(</span>target <span class="o">~</span> age <span class="o">+</span> trestbps <span class="o">+</span> exang <span class="o">+</span> thalach <span class="p">,</span> data <span class="o">=</span> heart_data<span class="p">,</span> family <span class="o">=</span> <span class="s">&quot;binomial&quot;</span><span class="p">)</span>
+
+<span class="kp">summary</span><span class="p">(</span>logit<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+glm(formula = target ~ age + trestbps + exang + thalach, family = &quot;binomial&quot;, 
+    data = heart_data)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.0935  -0.7944   0.4954   0.8133   2.2343  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -1.021121   1.784194  -0.572   0.5671    
+age         -0.017549   0.017144  -1.024   0.3060    
+trestbps    -0.014888   0.008337  -1.786   0.0741 .  
+exang1      -1.624981   0.305774  -5.314 1.07e-07 ***
+thalach      0.031095   0.007275   4.274 1.92e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 417.64  on 302  degrees of freedom
+Residual deviance: 323.14  on 298  degrees of freedom
+AIC: 333.14
+
+Number of Fisher Scoring iterations: 4
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Hosmer-Lemeshow goodness of fit test at 5% level of significance</span>
+<span class="kn">library</span><span class="p">(</span>ResourceSelection<span class="p">)</span>
+
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Hosmer-Lemeshow Goodness of Fit Test&quot;</span><span class="p">)</span>
+hl <span class="o">=</span> hoslem.test<span class="p">(</span>logit<span class="o">$</span>y<span class="p">,</span> fitted<span class="p">(</span>logit<span class="p">),</span> g<span class="o">=</span><span class="m">50</span><span class="p">)</span>
+hl
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>ResourceSelection 0.3-6 	 2023-06-27
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Hosmer-Lemeshow Goodness of Fit Test&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+	Hosmer and Lemeshow goodness of fit (GOF) test
+
+data:  logit$y, fitted(logit)
+X-squared = 44.622, df = 48, p-value = 0.612
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Walds test at 5% level of significance</span>
+conf_int <span class="o">&lt;-</span> confint.default<span class="p">(</span>logit<span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>conf_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 5 &#215; 2 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope="col">5 %</th><th scope="col">95 %</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">(Intercept)</th><td>-3.9559</td><td> 1.9136</td></tr>
+	<tr><th scope="row">age</th><td>-0.0457</td><td> 0.0107</td></tr>
+	<tr><th scope="row">trestbps</th><td>-0.0286</td><td>-0.0012</td></tr>
+	<tr><th scope="row">exang1</th><td>-2.1279</td><td>-1.1220</td></tr>
+	<tr><th scope="row">thalach</th><td> 0.0191</td><td> 0.0431</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Obtain confusion matrix and report accuracy, precision, and recall</span>
+default_model_data <span class="o">&lt;-</span> heart_data<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;age&#39;</span><span class="p">,</span> <span class="s">&#39;trestbps&#39;</span><span class="p">,</span> <span class="s">&#39;exang&#39;</span><span class="p">,</span> <span class="s">&#39;thalach&#39;</span><span class="p">)]</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata<span class="o">=</span>default_model_data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+
+<span class="c1"># If the predicted probability of default is &gt;=0.50 then predict credit default (default=&#39;1&#39;), otherwise predict no credit </span>
+<span class="c1"># default (default=&#39;0&#39;) </span>
+depvar_pred <span class="o">=</span> <span class="kp">as.factor</span><span class="p">(</span><span class="kp">ifelse</span><span class="p">(</span>pred <span class="o">&gt;=</span> <span class="m">0.5</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">))</span>
+
+<span class="c1"># This creates the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>heart_data<span class="o">$</span>target<span class="p">,</span> depvar_pred<span class="p">)[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">),</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: default=&quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: default=&quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Confusion Matrix&quot;</span><span class="p">)</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP <span class="o">=</span> <span class="m">134</span>
+FP <span class="o">=</span> <span class="m">49</span>
+TN <span class="o">=</span> <span class="m">89</span>
+FN <span class="o">=</span> <span class="m">31</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP <span class="o">+</span> TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> TN <span class="o">+</span> FP <span class="o">+</span> FN<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Confusion Matrix&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: default=0</th><th scope="col">Prediction: default=1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: default=0</th><td> 89</td><td> 49</td></tr>
+	<tr><th scope="row">Actual: default=1</th><td> 31</td><td>134</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.7359736
+[1] &quot;Precision&quot;
+[1] 0.7322404
+[1] &quot;Recall&quot;
+[1] 0.8121212
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Obtain ROC curve</span>
+<span class="kn">library</span><span class="p">(</span>pROC<span class="p">)</span>
+
+labels <span class="o">&lt;-</span> heart_data<span class="o">$</span>target
+predictions <span class="o">&lt;-</span> logit<span class="o">$</span>fitted.values
+
+roc <span class="o">&lt;-</span> roc<span class="p">(</span>labels <span class="o">~</span> predictions<span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Area Under the Curve (AUC)&quot;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>auc<span class="p">(</span>roc<span class="p">),</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;ROC Curve&quot;</span><span class="p">)</span>
+<span class="c1"># True Positive Rate (Sensitivity) and False Positive Rate (1 - Specificity)</span>
+plot<span class="p">(</span>roc<span class="p">,</span> legacy.axes <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.
+
+Attaching package: &#39;pROC&#39;
+
+The following objects are masked from &#39;package:stats&#39;:
+
+    cov, smooth, var
+
+Setting levels: control = 0, case = 1
+Setting direction: controls &lt; cases
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Area Under the Curve (AUC)&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+0.8007
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;ROC Curve&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Predictions</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 122, has exercise induced angina, and has maximum heart rate of 140&quot;</span><span class="p">)</span>
+newdata1 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>age <span class="o">=</span> <span class="m">50</span><span class="p">,</span> trestbps <span class="o">=</span> <span class="m">122</span><span class="p">,</span> exang <span class="o">=</span> <span class="s">&quot;1&quot;</span><span class="p">,</span> thalach <span class="o">=</span> <span class="m">140</span><span class="p">)</span>
+pred1 <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>pred1<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 130, does not have exercise induced angina, and has maximum heart rate of 165&quot;</span><span class="p">)</span>
+newdata2 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>age <span class="o">=</span> <span class="m">50</span><span class="p">,</span> trestbps <span class="o">=</span> <span class="m">130</span><span class="p">,</span> exang <span class="o">=</span> <span class="s">&quot;0&quot;</span><span class="p">,</span> thalach <span class="o">=</span> <span class="m">165</span><span class="p">)</span>
+pred2 <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>pred2<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 122, has exercise induced angina, and has maximum heart rate of 140&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 0.2716
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 130, does not have exercise induced angina, and has maximum heart rate of 165&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 0.7853
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Model #2 - Second Logistic Regression Model<a rel="noopener" class="anchor-link" href="#Model-#2---Second-Logistic-Regression-Model">&#182;</a></h2><p>You have been asked to create a logistic regression model for heart disease <em>(target)</em> using the variables age of the individual <em>(age)</em>, resting blood pressure (trestbps), type of chest pain <em>(cp)</em> and maximum heart rate achieved <em>(thalach)</em>. You also have to include the quadratic term for age and the interaction term between age and maximum heart rate achieved. Before writing any code, review Section 4 of the Summary Report template to see the questions you will be answering about your model.</p>
+<p>Run your scripts to get the outputs of your analysis. Then use the outputs to answer the questions in your summary report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Logistic multiple regression model</span>
+logit <span class="o">&lt;-</span> glm<span class="p">(</span>target <span class="o">~</span> age <span class="o">+</span> trestbps <span class="o">+</span> cp <span class="o">+</span> thalach <span class="p">,</span> data <span class="o">=</span> heart_data<span class="p">,</span> family <span class="o">=</span> <span class="s">&quot;binomial&quot;</span><span class="p">)</span>
+
+<span class="kp">summary</span><span class="p">(</span>logit<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+Call:
+glm(formula = target ~ age + trestbps + cp + thalach, family = &quot;binomial&quot;, 
+    data = heart_data)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.2356  -0.7661   0.4183   0.6793   2.1787  
+
+Coefficients:
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.265458   1.811989  -1.250 0.211204    
+age         -0.012846   0.017656  -0.728 0.466873    
+trestbps    -0.019373   0.008899  -2.177 0.029476 *  
+cp1          1.998672   0.439940   4.543 5.54e-06 ***
+cp2          2.098584   0.345310   6.077 1.22e-09 ***
+cp3          1.786071   0.542572   3.292 0.000995 ***
+thalach      0.031350   0.007559   4.147 3.36e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 417.64  on 302  degrees of freedom
+Residual deviance: 300.05  on 296  degrees of freedom
+AIC: 314.05
+
+Number of Fisher Scoring iterations: 4
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Hosmer-Lemeshow goodness of fit test</span>
+<span class="kn">library</span><span class="p">(</span>ResourceSelection<span class="p">)</span>
+
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Hosmer-Lemeshow Goodness of Fit Test&quot;</span><span class="p">)</span>
+hl <span class="o">=</span> hoslem.test<span class="p">(</span>logit<span class="o">$</span>y<span class="p">,</span> fitted<span class="p">(</span>logit<span class="p">),</span> g<span class="o">=</span><span class="m">50</span><span class="p">)</span>
+hl
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Hosmer-Lemeshow Goodness of Fit Test&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_text output_subarea">
+<pre>
+	Hosmer and Lemeshow goodness of fit (GOF) test
+
+data:  logit$y, fitted(logit)
+X-squared = 41.121, df = 48, p-value = 0.7485
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Walds test</span>
+conf_int <span class="o">&lt;-</span> confint.default<span class="p">(</span>logit<span class="p">,</span> level<span class="o">=</span><span class="m">0.90</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>conf_int<span class="p">,</span><span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 7 &#215; 2 of type dbl</caption>
+<thead>
+	<tr><th></th><th scope="col">5 %</th><th scope="col">95 %</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">(Intercept)</th><td>-5.2459</td><td> 0.7150</td></tr>
+	<tr><th scope="row">age</th><td>-0.0419</td><td> 0.0162</td></tr>
+	<tr><th scope="row">trestbps</th><td>-0.0340</td><td>-0.0047</td></tr>
+	<tr><th scope="row">cp1</th><td> 1.2750</td><td> 2.7223</td></tr>
+	<tr><th scope="row">cp2</th><td> 1.5306</td><td> 2.6666</td></tr>
+	<tr><th scope="row">cp3</th><td> 0.8936</td><td> 2.6785</td></tr>
+	<tr><th scope="row">thalach</th><td> 0.0189</td><td> 0.0438</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Confusion matrix</span>
+default_model_data <span class="o">&lt;-</span> heart_data<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;age&#39;</span><span class="p">,</span> <span class="s">&#39;trestbps&#39;</span><span class="p">,</span> <span class="s">&#39;cp&#39;</span><span class="p">,</span> <span class="s">&#39;thalach&#39;</span><span class="p">)]</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata<span class="o">=</span>default_model_data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+
+<span class="c1"># If the predicted probability of default is &gt;=0.50 then predict credit default (default=&#39;1&#39;), otherwise predict no credit </span>
+<span class="c1"># default (default=&#39;0&#39;) </span>
+depvar_pred <span class="o">=</span> <span class="kp">as.factor</span><span class="p">(</span><span class="kp">ifelse</span><span class="p">(</span>pred <span class="o">&gt;=</span> <span class="m">0.5</span><span class="p">,</span> <span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">))</span>
+
+<span class="c1"># This creates the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>heart_data<span class="o">$</span>target<span class="p">,</span> depvar_pred<span class="p">)[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">),</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: default=&quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: default=&quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Confusion Matrix&quot;</span><span class="p">)</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP <span class="o">=</span> <span class="m">129</span>
+FP <span class="o">=</span> <span class="m">32</span>
+TN <span class="o">=</span> <span class="m">106</span>
+FN <span class="o">=</span> <span class="m">36</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP <span class="o">+</span> TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> TN <span class="o">+</span> FP <span class="o">+</span> FN<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Confusion Matrix&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: default=0</th><th scope="col">Prediction: default=1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: default=0</th><td>106</td><td> 32</td></tr>
+	<tr><th scope="row">Actual: default=1</th><td> 36</td><td>129</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.7755776
+[1] &quot;Precision&quot;
+[1] 0.8012422
+[1] &quot;Recall&quot;
+[1] 0.7818182
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># ROC curve</span>
+<span class="kn">library</span><span class="p">(</span>pROC<span class="p">)</span>
+
+labels <span class="o">&lt;-</span> heart_data<span class="o">$</span>target
+predictions <span class="o">&lt;-</span> logit<span class="o">$</span>fitted.values
+
+roc <span class="o">&lt;-</span> roc<span class="p">(</span>labels <span class="o">~</span> predictions<span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Area Under the Curve (AUC)&quot;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>auc<span class="p">(</span>roc<span class="p">),</span><span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;ROC Curve&quot;</span><span class="p">)</span>
+<span class="c1"># True Positive Rate (Sensitivity) and False Positive Rate (1 - Specificity)</span>
+plot<span class="p">(</span>roc<span class="p">,</span> legacy.axes <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Setting levels: control = 0, case = 1
+Setting direction: controls &lt; cases
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Area Under the Curve (AUC)&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+0.8389
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;ROC Curve&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Predictions</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 115, does not experience chest pain, and has maximum heart rate of 133&quot;</span><span class="p">)</span>
+newdata1 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>age <span class="o">=</span> <span class="m">50</span><span class="p">,</span> trestbps <span class="o">=</span> <span class="m">115</span><span class="p">,</span> cp <span class="o">=</span> <span class="s">&quot;0&quot;</span><span class="p">,</span> thalach <span class="o">=</span> <span class="m">133</span><span class="p">)</span>
+pred1 <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata1<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>pred1<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 125, has typical angina, and has maximum heart rate of 155&quot;</span><span class="p">)</span>
+newdata2 <span class="o">&lt;-</span> <span class="kt">data.frame</span><span class="p">(</span>age <span class="o">=</span> <span class="m">50</span><span class="p">,</span> trestbps <span class="o">=</span> <span class="m">125</span><span class="p">,</span> cp <span class="o">=</span> <span class="s">&quot;1&quot;</span><span class="p">,</span> thalach <span class="o">=</span> <span class="m">155</span><span class="p">)</span>
+pred2 <span class="o">&lt;-</span> predict<span class="p">(</span>logit<span class="p">,</span> newdata2<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+<span class="kp">round</span><span class="p">(</span>pred2<span class="p">,</span> <span class="m">4</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 115, does not experience chest pain, and has maximum heart rate of 133&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 0.2756
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Probability of an individual having heart disease who is 50 years old, resting blood pressure of 125, has typical angina, and has maximum heart rate of 155&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<strong>1:</strong> 0.8218
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Random Forest Classification Model<a rel="noopener" class="anchor-link" href="#Random-Forest-Classification-Model">&#182;</a></h2><p>You have been asked to create a random forest classification model for the presence of heart disease <em>(target)</em> using the variables age <em>(age)</em>, sex <em>(sex)</em>, chest pain type <em>(cp)</em>, resting blood pressure <em>(trestbps)</em>, cholesterol measurement <em>(chol)</em>, resting electrocardiographic measurement <em>(restecg)</em>, exercise-induced angina <em>(exang)</em>, and number of major vessels <em>(ca)</em>. Before writing any code, review Section 5 of the Summary Report template to see the questions you will be answering about your model.</p>
+<p>Run your scripts to get the outputs of your regression analysis. Then use the outputs to answer the questions in your summary report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.85</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the data set&quot;</span><span class="p">)</span>
+<span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">)</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data <span class="o">=</span> heart_data<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the testing set&quot;</span><span class="p">)</span>
+test.data <span class="o">=</span> heart_data<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the data set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+303
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+257
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the testing set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+46
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+model_rf1 <span class="o">&lt;-</span> randomForest<span class="p">(</span>target <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> <span class="m">2</span><span class="p">)</span>
+
+<span class="c1"># Confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Confusion Matrix: TRAINING set based on random forest model built using 2 trees&#39;</span><span class="p">)</span>
+train.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf1<span class="p">,</span> train.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>train.data<span class="o">$</span>target<span class="p">,</span> train.data.predict<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print a nicely formatted confusion matrix</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP <span class="o">=</span> <span class="m">117</span>
+FP <span class="o">=</span> <span class="m">10</span>
+TN <span class="o">=</span> <span class="m">110</span>
+FN <span class="o">=</span> <span class="m">20</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP <span class="o">+</span> TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> TN <span class="o">+</span> FP <span class="o">+</span> FN<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Confusion Matrix: TESTING set based on random forest model built using 2 trees&#39;</span><span class="p">)</span>
+test.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf1<span class="p">,</span> test.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>test.data<span class="o">$</span>target<span class="p">,</span> test.data.predict<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print a nicely formatted confusion matrix</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP1 <span class="o">=</span> <span class="m">18</span>
+FP1 <span class="o">=</span> <span class="m">5</span>
+TN1 <span class="o">=</span> <span class="m">13</span>
+FN1 <span class="o">=</span> <span class="m">10</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1 <span class="o">+</span> TN1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1 <span class="o">+</span> TN1 <span class="o">+</span> FP1 <span class="o">+</span> FN1<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1<span class="o">+</span>FP1<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1<span class="o">+</span>FN1<span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Confusion Matrix: TRAINING set based on random forest model built using 2 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: 0</th><th scope="col">Prediction: 1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: 0</th><td>110</td><td> 10</td></tr>
+	<tr><th scope="row">Actual: 1</th><td> 20</td><td>117</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.8832685
+[1] &quot;Precision&quot;
+[1] 0.9212598
+[1] &quot;Recall&quot;
+[1] 0.8540146
+[1] &quot;======================================================================================================================&quot;
+[1] &quot;Confusion Matrix: TESTING set based on random forest model built using 2 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: 0</th><th scope="col">Prediction: 1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: 0</th><td>13</td><td> 5</td></tr>
+	<tr><th scope="row">Actual: 1</th><td>10</td><td>18</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.673913
+[1] &quot;Precision&quot;
+[1] 0.7826087
+[1] &quot;Recall&quot;
+[1] 0.6428571
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+
+<span class="c1"># checking</span>
+<span class="c1">#=====================================================================</span>
+train <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+test <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+trees <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+
+<span class="kr">for</span><span class="p">(</span>i <span class="kr">in</span> <span class="kp">seq</span><span class="p">(</span>from<span class="o">=</span><span class="m">1</span><span class="p">,</span> to<span class="o">=</span><span class="m">100</span><span class="p">,</span> by<span class="o">=</span><span class="m">1</span><span class="p">))</span> <span class="p">{</span>
+    <span class="c1">#print(i)</span>
+    
+    trees <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>trees<span class="p">,</span> i<span class="p">)</span>
+    
+    model_rf3 <span class="o">&lt;-</span> randomForest<span class="p">(</span>target <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> i<span class="p">)</span>
+    
+    train.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf3<span class="p">,</span> train.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+    conf.matrix1 <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>train.data<span class="o">$</span>target<span class="p">,</span> train.data.predict<span class="p">)</span>
+    train_error <span class="o">=</span> <span class="m">1</span><span class="o">-</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span><span class="kp">diag</span><span class="p">(</span>conf.matrix1<span class="p">)))</span><span class="o">/</span><span class="kp">sum</span><span class="p">(</span>conf.matrix1<span class="p">)</span>
+    train <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>train<span class="p">,</span> train_error<span class="p">)</span>
+    
+    test.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf3<span class="p">,</span> test.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+    conf.matrix2 <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>test.data<span class="o">$</span>target<span class="p">,</span> test.data.predict<span class="p">)</span>
+    test_error <span class="o">=</span> <span class="m">1</span><span class="o">-</span><span class="p">(</span><span class="kp">sum</span><span class="p">(</span><span class="kp">diag</span><span class="p">(</span>conf.matrix2<span class="p">)))</span><span class="o">/</span><span class="kp">sum</span><span class="p">(</span>conf.matrix2<span class="p">)</span>
+    test <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>test<span class="p">,</span> test_error<span class="p">)</span>
+<span class="p">}</span>
+ 
+<span class="c1">#matplot (trees, cbind (train, test), ylim=c(0,0.5) , type = c(&quot;l&quot;, &quot;l&quot;), lwd=2, col=c(&quot;red&quot;,&quot;blue&quot;), ylab=&quot;Error&quot;, xlab=&quot;number of trees&quot;)</span>
+<span class="c1">#legend(&#39;topright&#39;,legend = c(&#39;training set&#39;,&#39;testing set&#39;), col = c(&quot;red&quot;,&quot;blue&quot;), lwd = 2 )</span>
+
+plot<span class="p">(</span>trees<span class="p">,</span> train<span class="p">,</span>type <span class="o">=</span> <span class="s">&quot;l&quot;</span><span class="p">,</span>ylim<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1.0</span><span class="p">),</span>col <span class="o">=</span> <span class="s">&quot;red&quot;</span><span class="p">,</span> xlab <span class="o">=</span> <span class="s">&quot;Number of Trees&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Classification Error&quot;</span><span class="p">)</span>
+lines<span class="p">(</span>test<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;l&quot;</span><span class="p">,</span> col <span class="o">=</span> <span class="s">&quot;blue&quot;</span><span class="p">)</span>
+legend<span class="p">(</span><span class="s">&#39;topright&#39;</span><span class="p">,</span>legend <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;training set&#39;</span><span class="p">,</span><span class="s">&#39;testing set&#39;</span><span class="p">),</span> col <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;red&quot;</span><span class="p">,</span><span class="s">&quot;blue&quot;</span><span class="p">),</span> lwd <span class="o">=</span> <span class="m">2</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+model_rf4 <span class="o">&lt;-</span> randomForest<span class="p">(</span>target <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> <span class="m">25</span><span class="p">)</span>
+
+<span class="c1"># Confusion matrix</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Confusion Matrix: TRAINING set based on random forest model built using 25 trees&#39;</span><span class="p">)</span>
+train.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf4<span class="p">,</span> train.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>train.data<span class="o">$</span>target<span class="p">,</span> train.data.predict<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP <span class="o">=</span> <span class="m">136</span>
+FP <span class="o">=</span> <span class="m">1</span>
+TN <span class="o">=</span> <span class="m">119</span>
+FN <span class="o">=</span> <span class="m">1</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP <span class="o">+</span> TN<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP <span class="o">+</span> TN <span class="o">+</span> FP <span class="o">+</span> FN<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FP<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP<span class="o">+</span>FN<span class="p">))</span>
+
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Confusion Matrix: TESTING set based on random forest model built using 25 trees&#39;</span><span class="p">)</span>
+test.data.predict <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf4<span class="p">,</span> test.data<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;class&quot;</span><span class="p">)</span>
+
+<span class="c1"># Construct the confusion matrix</span>
+conf.matrix <span class="o">&lt;-</span> <span class="kp">table</span><span class="p">(</span>test.data<span class="o">$</span>target<span class="p">,</span> test.data.predict<span class="p">)[,</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">,</span><span class="s">&#39;1&#39;</span><span class="p">)]</span>
+<span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Actual&quot;</span><span class="p">,</span> <span class="kp">rownames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+<span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">)</span> <span class="o">&lt;-</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;Prediction&quot;</span><span class="p">,</span> <span class="kp">colnames</span><span class="p">(</span>conf.matrix<span class="p">),</span> sep <span class="o">=</span> <span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+<span class="c1"># Print nicely formatted confusion matrix</span>
+<span class="kp">format</span><span class="p">(</span>conf.matrix<span class="p">,</span>justify<span class="o">=</span><span class="s">&quot;centre&quot;</span><span class="p">,</span>digit<span class="o">=</span><span class="m">2</span><span class="p">)</span>
+
+TP1 <span class="o">=</span> <span class="m">19</span>
+FP1 <span class="o">=</span> <span class="m">7</span>
+TN1 <span class="o">=</span> <span class="m">11</span>
+FN1 <span class="o">=</span> <span class="m">9</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Accuracy&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1 <span class="o">+</span> TN1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1 <span class="o">+</span> TN1 <span class="o">+</span> FP1 <span class="o">+</span> FN1<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Precision&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1<span class="o">+</span>FP1<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Recall&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">((</span>TP1<span class="p">)</span><span class="o">/</span><span class="p">(</span>TP1<span class="o">+</span>FN1<span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Confusion Matrix: TRAINING set based on random forest model built using 25 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: 0</th><th scope="col">Prediction: 1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: 0</th><td>119</td><td>  1</td></tr>
+	<tr><th scope="row">Actual: 1</th><td>  1</td><td>136</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.9922179
+[1] &quot;Precision&quot;
+[1] 0.9927007
+[1] &quot;Recall&quot;
+[1] 0.9927007
+[1] &quot;======================================================================================================================&quot;
+[1] &quot;Confusion Matrix: TESTING set based on random forest model built using 25 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+<table>
+<caption>A matrix: 2 &#215; 2 of type chr</caption>
+<thead>
+	<tr><th></th><th scope="col">Prediction: 0</th><th scope="col">Prediction: 1</th></tr>
+</thead>
+<tbody>
+	<tr><th scope="row">Actual: 0</th><td>11</td><td> 7</td></tr>
+	<tr><th scope="row">Actual: 1</th><td> 9</td><td>19</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Accuracy&quot;
+[1] 0.6521739
+[1] &quot;Precision&quot;
+[1] 0.7307692
+[1] &quot;Recall&quot;
+[1] 0.6785714
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>Random Forest Regression Model<a rel="noopener" class="anchor-link" href="#Random-Forest-Regression-Model">&#182;</a></h2><p>You have been asked to create a random forest regression model for maximum heart rate achieved using the variables age <em>(age)</em>, sex <em>(sex)</em>, chest pain type <em>(cp)</em>, resting blood pressure <em>(trestbps)</em>, cholesterol measurement <em>(chol)</em>, resting electrocardiographic measurement <em>(restecg)</em>, exercise-induced angina <em>(exang)</em>, and number of major vessels <em>(ca)</em>. Before writing any code, review Section 6 of the Summary Report template to see the questions you will be answering about your model.</p>
+<p>Run your scripts to get the outputs of your analysis. Then use the outputs to answer the questions in your summary report.</p>
+<p><strong>Note: Use the + (plus) button to add new code blocks, if needed.</strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[36]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+
+<span class="c1"># Partition the data set into training and testing data</span>
+samp.size <span class="o">=</span> <span class="kp">floor</span><span class="p">(</span><span class="m">0.80</span><span class="o">*</span><span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">))</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the data set&quot;</span><span class="p">)</span>
+<span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">)</span>
+
+<span class="c1"># Training set</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the training set&quot;</span><span class="p">)</span>
+train_ind <span class="o">=</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">seq_len</span><span class="p">(</span><span class="kp">nrow</span><span class="p">(</span>heart_data<span class="p">)),</span> size <span class="o">=</span> samp.size<span class="p">)</span>
+train.data <span class="o">=</span> heart_data<span class="p">[</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>train.data<span class="p">)</span>
+
+<span class="c1"># Testing set </span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;Number of rows for the testing set&quot;</span><span class="p">)</span>
+test.data <span class="o">=</span> heart_data<span class="p">[</span><span class="o">-</span>train_ind<span class="p">,]</span>
+<span class="kp">nrow</span><span class="p">(</span>test.data<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the data set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+303
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the training set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+242
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;Number of rows for the testing set&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+61
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[37]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+model_rf6 <span class="o">&lt;-</span> randomForest<span class="p">(</span>thalach <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> <span class="m">5</span><span class="p">)</span>
+
+
+<span class="c1"># Root mean squared error</span>
+RMSE <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>pred<span class="p">,</span> obs<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">return</span><span class="p">(</span><span class="kp">sqrt</span><span class="p">(</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>pred <span class="o">-</span> obs<span class="p">)</span><span class="o">^</span><span class="m">2</span> <span class="p">)</span><span class="o">/</span><span class="kp">length</span><span class="p">(</span>pred<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Root Mean Squared Error: TRAINING set based on random forest model built using 5 trees&#39;</span><span class="p">)</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf6<span class="p">,</span> newdata<span class="o">=</span>train.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+RMSE<span class="p">(</span>pred<span class="p">,</span> train.data<span class="o">$</span>thalach<span class="p">)</span>
+
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Root Mean Squared Error: TESTING set based on random forest model built using 5 trees&#39;</span><span class="p">)</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf6<span class="p">,</span> newdata<span class="o">=</span>test.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+RMSE<span class="p">(</span>pred<span class="p">,</span> test.data<span class="o">$</span>thalach<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Root Mean Squared Error: TRAINING set based on random forest model built using 5 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+12.7008401394952
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Root Mean Squared Error: TESTING set based on random forest model built using 5 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+22.4876859721597
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+
+<span class="c1"># Root mean squared error</span>
+RMSE <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>pred<span class="p">,</span> obs<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">return</span><span class="p">(</span><span class="kp">sqrt</span><span class="p">(</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>pred <span class="o">-</span> obs<span class="p">)</span><span class="o">^</span><span class="m">2</span> <span class="p">)</span><span class="o">/</span><span class="kp">length</span><span class="p">(</span>pred<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+
+<span class="c1"># checking</span>
+<span class="c1">#=====================================================================</span>
+train <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+test <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+trees <span class="o">=</span> <span class="kt">c</span><span class="p">()</span>
+
+<span class="kr">for</span><span class="p">(</span>i <span class="kr">in</span> <span class="kp">seq</span><span class="p">(</span>from<span class="o">=</span><span class="m">1</span><span class="p">,</span> to<span class="o">=</span><span class="m">80</span><span class="p">,</span> by<span class="o">=</span><span class="m">1</span><span class="p">))</span> <span class="p">{</span>
+    trees <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>trees<span class="p">,</span> i<span class="p">)</span>
+    model_rf7 <span class="o">&lt;-</span> randomForest<span class="p">(</span>thalach <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> i<span class="p">)</span>
+    
+    pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf7<span class="p">,</span> newdata<span class="o">=</span>train.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+    rmse_train <span class="o">&lt;-</span>  RMSE<span class="p">(</span>pred<span class="p">,</span> train.data<span class="o">$</span>thalach<span class="p">)</span>
+    train <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>train<span class="p">,</span> rmse_train<span class="p">)</span>
+    
+    pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf7<span class="p">,</span> newdata<span class="o">=</span>test.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+     rmse_test <span class="o">&lt;-</span>  RMSE<span class="p">(</span>pred<span class="p">,</span> test.data<span class="o">$</span>thalach<span class="p">)</span>
+    test <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span>test<span class="p">,</span> rmse_test<span class="p">)</span>
+<span class="p">}</span>
+ 
+plot<span class="p">(</span>trees<span class="p">,</span> train<span class="p">,</span>type <span class="o">=</span> <span class="s">&quot;l&quot;</span><span class="p">,</span>ylim<span class="o">=</span><span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">80</span><span class="p">),</span>col <span class="o">=</span> <span class="s">&quot;red&quot;</span><span class="p">,</span> xlab <span class="o">=</span> <span class="s">&quot;Number of Trees&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Root Mean Squared Error&quot;</span><span class="p">)</span>
+lines<span class="p">(</span>test<span class="p">,</span> type <span class="o">=</span> <span class="s">&quot;l&quot;</span><span class="p">,</span> col <span class="o">=</span> <span class="s">&quot;blue&quot;</span><span class="p">)</span>
+legend<span class="p">(</span><span class="s">&#39;topright&#39;</span><span class="p">,</span>legend <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&#39;training set&#39;</span><span class="p">,</span><span class="s">&#39;testing set&#39;</span><span class="p">),</span> col <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;red&quot;</span><span class="p">,</span><span class="s">&quot;blue&quot;</span><span class="p">),</span> lwd <span class="o">=</span> <span class="m">2</span> <span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea">
+<img src="javascript://"/>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-r"><pre><span></span><span class="kp">set.seed</span><span class="p">(</span><span class="m">6522048</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>randomForest<span class="p">)</span>
+model_rf8 <span class="o">&lt;-</span> randomForest<span class="p">(</span>thalach <span class="o">~</span> age<span class="o">+</span>sex<span class="o">+</span>cp<span class="o">+</span>trestbps<span class="o">+</span><span class="kp">chol</span><span class="o">+</span>restecg<span class="o">+</span>exang<span class="o">+</span>ca<span class="p">,</span> data<span class="o">=</span>train.data<span class="p">,</span> ntree <span class="o">=</span> <span class="m">20</span><span class="p">)</span>
+
+
+<span class="c1"># Root mean squared error</span>
+RMSE <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>pred<span class="p">,</span> obs<span class="p">)</span> <span class="p">{</span>
+    <span class="kr">return</span><span class="p">(</span><span class="kp">sqrt</span><span class="p">(</span> <span class="kp">sum</span><span class="p">(</span> <span class="p">(</span>pred <span class="o">-</span> obs<span class="p">)</span><span class="o">^</span><span class="m">2</span> <span class="p">)</span><span class="o">/</span><span class="kp">length</span><span class="p">(</span>pred<span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Root Mean Squared Error: TRAINING set based on random forest model built using 20 trees&#39;</span><span class="p">)</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf8<span class="p">,</span> newdata<span class="o">=</span>train.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+RMSE<span class="p">(</span>pred<span class="p">,</span> train.data<span class="o">$</span>thalach<span class="p">)</span>
+
+
+<span class="kp">print</span><span class="p">(</span><span class="s">&quot;======================================================================================================================&quot;</span><span class="p">)</span>
+<span class="kp">print</span><span class="p">(</span><span class="s">&#39;Root Mean Squared Error: TESTING set based on random forest model built using 20 trees&#39;</span><span class="p">)</span>
+pred <span class="o">&lt;-</span> predict<span class="p">(</span>model_rf8<span class="p">,</span> newdata<span class="o">=</span>test.data<span class="p">,</span> type<span class="o">=</span><span class="s">&#39;response&#39;</span><span class="p">)</span>
+RMSE<span class="p">(</span>pred<span class="p">,</span> test.data<span class="o">$</span>thalach<span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Root Mean Squared Error: TRAINING set based on random forest model built using 20 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+11.6281588266415
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[1] &quot;======================================================================================================================&quot;
+[1] &quot;Root Mean Squared Error: TESTING set based on random forest model built using 20 trees&quot;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea">
+21.1139392413712
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2>End of Project Two Jupyter Notebook<a rel="noopener" class="anchor-link" href="#End-of-Project-Two-Jupyter-Notebook">&#182;</a></h2><p>The HTML output can be downloaded by clicking <strong>File</strong>, then <strong>Download as</strong>, then <strong>HTML</strong>. Be sure to answer all of the questions in the Summary Report template for Project Two, and to include your completed Jupyter Notebook scripts as part of your submission.</p>
+
+</div>
+</div>
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+						if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+							document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+								elm.setAttribute('style', 'display: block; height: 0.5rem;');
+							});
+
+							window.D2L.MathJax.loadMathJax({
+								outputScale: 1.5,
+								renderLatex: false,
+								enableMML3Support: false
+							});
+						}
+					});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/2024.12.210/unbundled/embeds.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					window.D2L.EmbedRenderer.renderEmbeds(document.body);
+				});</script></body></html>
