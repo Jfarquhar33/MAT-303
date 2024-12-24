@@ -13,5 +13,5 @@ Applied Statistics
 
 [Module Six](https://github.com/Jfarquhar33/MAT-303/tree/Module-Six)
 
-[## Module Seven](https://github.com/Jfarquhar33/MAT-303/tree/Module-Seven)
+[Module Seven](https://github.com/Jfarquhar33/MAT-303/tree/Module-Seven)
 
